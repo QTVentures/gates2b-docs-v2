@@ -1,0 +1,240 @@
+---
+title: "Crear Cobro"
+sidebarTitle: "POST /charge"
+api: "POST https://api.gates2b.com/charge"
+authMethod: "authorization"
+description: "Crea un nuevo cobro. Opcionalmente, puede crear el primer intento de pago junto (ej.: PIX). También permite crear intentos independientes vía POST /charge/:chargeId/attempts."
+---
+
+<ParamField
+  header="Authorization"
+  type="string"
+  placeholder="Bearer {token}"
+  required
+>
+  Token de autenticación en formato Bearer.
+</ParamField>
+
+<ParamField body="grossAmount" type="string" placeholder="10.50" required>
+  Monto bruto del cobro.
+</ParamField>
+
+<ParamField body="currency" type="string" placeholder="BRL" required>
+  Moneda del cobro (ISO 4217).
+</ParamField>
+
+<ParamField body="description" type="string" placeholder="Descripción del cobro">
+  Descripción libre del cobro.
+</ParamField>
+
+<ParamField body="expiresAt" type="string" placeholder="2030-12-31T23:59:59.000Z">
+  Fecha de expiración en formato ISO 8601.
+</ParamField>
+
+<ParamField body="externalReference" type="string" placeholder="pedido-123">
+  Referencia externa de su sistema para rastreo.
+</ParamField>
+
+<ParamField body="paymentMethod" type="string" placeholder="PIX">
+  Método de pago para crear el primer intento junto con el cobro. Si se omite, solo se crea el cobro con estado `PENDING`.
+</ParamField>
+
+<ParamField body="attemptIdempotencyKey" type="string" placeholder="uuid-v4">
+  Clave de idempotencia para el intento (obligatorio cuando se informa `paymentMethod`).
+</ParamField>
+
+<ParamField body="customerMeta" type="object">
+  Datos del cliente asociado al cobro.
+  <Expandable title="Campos">
+    <ParamField body="name" type="string">Nombre del cliente.</ParamField>
+    <ParamField body="email" type="string">Correo electrónico del cliente.</ParamField>
+    <ParamField body="document" type="string">Documento del cliente (CPF/CNPJ).</ParamField>
+    <ParamField body="phone" type="string">Teléfono del cliente.</ParamField>
+    <ParamField body="source" type="string" placeholder="PRE_FILLED">Origen de los datos del cliente.</ParamField>
+  </Expandable>
+</ParamField>
+
+### Response
+
+<ResponseField name="id" type="string">
+  ID único del cobro creado (o del intento, cuando se informa `paymentMethod`).
+</ResponseField>
+
+<ResponseField name="grossAmount" type="string">
+  Monto bruto del cobro.
+</ResponseField>
+
+<ResponseField name="currency" type="string">
+  Moneda del cobro.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Estado actual (`PENDING`, `PAID`, `EXPIRED`, `CANCELED`).
+</ResponseField>
+
+<ResponseField name="description" type="string">
+  Descripción del cobro.
+</ResponseField>
+
+<ResponseField name="externalReference" type="string">
+  Referencia externa informada en la creación.
+</ResponseField>
+
+<ResponseField name="expiresAt" type="string">
+  Fecha de expiración.
+</ResponseField>
+
+<ResponseField name="createdAt" type="string">
+  Fecha de creación (ISO 8601).
+</ResponseField>
+
+<ResponseField name="chargeId" type="string">
+  ID del cobro (retornado cuando se informa `paymentMethod` y la respuesta es el intento).
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL (sin intento)
+curl -X POST "https://api.gates2b.com/charge" \
+  -H "Authorization: Bearer {su-token}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "grossAmount": "10.50",
+    "currency": "BRL",
+    "description": "Cobro de prueba",
+    "expiresAt": "2030-12-31T23:59:59.000Z",
+    "externalReference": "pedido-123",
+    "customerMeta": {
+      "name": "Cliente Ejemplo",
+      "source": "PRE_FILLED"
+    }
+  }'
+```
+
+```bash cURL (con PIX)
+curl -X POST "https://api.gates2b.com/charge" \
+  -H "Authorization: Bearer {su-token}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "grossAmount": "15.00",
+    "currency": "BRL",
+    "paymentMethod": "PIX",
+    "description": "Cobro PIX",
+    "expiresAt": "2030-12-31T23:59:59.000Z",
+    "attemptIdempotencyKey": "uuid-v4"
+  }'
+```
+
+```javascript
+const response = await fetch("https://api.gates2b.com/charge", {
+  method: "POST",
+  headers: {
+    Authorization: "Bearer {su-token}",
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    grossAmount: "10.50",
+    currency: "BRL",
+    description: "Cobro de prueba",
+    expiresAt: "2030-12-31T23:59:59.000Z",
+    externalReference: "pedido-123",
+    customerMeta: {
+      name: "Cliente Ejemplo",
+      source: "PRE_FILLED",
+    },
+  }),
+});
+
+const data = await response.json();
+```
+
+```python
+import requests
+
+url = "https://api.gates2b.com/charge"
+headers = {
+    "Authorization": "Bearer {su-token}",
+    "Content-Type": "application/json"
+}
+payload = {
+    "grossAmount": "10.50",
+    "currency": "BRL",
+    "description": "Cobro de prueba",
+    "expiresAt": "2030-12-31T23:59:59.000Z",
+    "externalReference": "pedido-123",
+    "customerMeta": {
+        "name": "Cliente Ejemplo",
+        "source": "PRE_FILLED"
+    }
+}
+
+response = requests.post(url, headers=headers, json=payload)
+data = response.json()
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Éxito (sin intento)
+{
+  "id": "chr_abc123",
+  "grossAmount": "10.50",
+  "currency": "BRL",
+  "status": "PENDING",
+  "description": "Cobro de prueba",
+  "externalReference": "pedido-123",
+  "expiresAt": "2030-12-31T23:59:59.000Z",
+  "createdAt": "2026-01-15T14:00:00.000Z"
+}
+```
+
+```json Éxito (con PIX — retorna el intento)
+{
+  "id": "att_xyz789",
+  "chargeId": "chr_abc123",
+  "paymentMethod": "PIX",
+  "status": "PENDING",
+  "createdAt": "2026-01-15T14:00:00.000Z"
+}
+```
+
+```json Error - Datos Inválidos
+{
+  "error": "Bad Request",
+  "message": "Datos inválidos en el payload",
+  "statusCode": 400
+}
+```
+
+```json Error - No Autorizado
+{
+  "error": "Unauthorized",
+  "message": "Token de autenticación ausente o inválido",
+  "statusCode": 401
+}
+```
+
+</ResponseExample>
+
+## Crear Intento Independiente
+
+`POST /charge/{chargeId}/attempts`
+
+Crea un nuevo intento de pago para un cobro existente (server-side, autenticado vía JWT).
+
+| Parámetro | Tipo | Obligatorio | Descripción |
+|-----------|------|:-----------:|-------------|
+| `paymentMethod` | string | Sí | Método de pago (`PIX`, `INTERNATIONAL`) |
+| `currency` | string | Condicional | Moneda de destino (obligatorio para `INTERNATIONAL`) |
+| `attemptIdempotencyKey` | string | Sí | Clave de idempotencia |
+
+```bash
+curl -X POST "https://api.gates2b.com/charge/{chargeId}/attempts" \
+  -H "Authorization: Bearer {su-token}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "paymentMethod": "PIX",
+    "attemptIdempotencyKey": "uuid-v4"
+  }'
+```

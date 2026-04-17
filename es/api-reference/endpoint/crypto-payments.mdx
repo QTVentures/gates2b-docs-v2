@@ -1,0 +1,162 @@
+---
+title: "Crear Pago Crypto"
+sidebarTitle: "/payments/v2/crypto"
+api: "POST https://api-gateway.gates2b.com/payments/v2/crypto"
+authMethod: "authorization"
+description: "Este endpoint crea un pago en criptomonedas con conversion automatica de moneda fiat."
+---
+
+<ParamField
+  header="Authorization"
+  type="string"
+  placeholder="Bearer {token}"
+  required
+>
+  El token de autenticacion en formato Bearer es obligatorio para acceder a este
+  endpoint.
+</ParamField>
+
+<ParamField body="amount" type="number" placeholder="71.4226873" required>
+  Valor del pago en la moneda fiat especificada.
+</ParamField>
+
+<ParamField body="fiat_currency" type="string" placeholder="BRL" required>
+  Moneda fiat para conversion (ej: BRL, USD, EUR).
+</ParamField>
+
+<ParamField body="pay_currency" type="string" placeholder="USDTBSC" required>
+  Criptomoneda que se utilizara para el pago (ej: USDTBSC, BTC, ETH).
+</ParamField>
+
+<ParamField
+  body="customer_name"
+  type="string"
+  placeholder="Maria Santos"
+  required
+>
+  Nombre completo del cliente.
+</ParamField>
+
+<ParamField
+  body="customer_email"
+  type="string"
+  placeholder="maria@empresa.com"
+  required
+>
+  Correo del cliente.
+</ParamField>
+
+<ParamField
+  body="external_reference"
+  type="string"
+  placeholder="INV-2024-001"
+  required
+>
+  Referencia externa de la aplicacion.
+</ParamField>
+
+<RequestExample>
+
+```bash cURL
+curl -X POST "https://api-gateway.gates2b.com/payments/v2/crypto" \
+  -H "Authorization: Bearer {seu-token}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "amount": 71.4226873,
+    "fiat_currency": "BRL",
+    "pay_currency": "USDTBSC",
+    "customer_name": "Maria Santos",
+    "customer_email": "maria@empresa.com",
+    "external_reference": "INV-2024-001",
+  }'
+```
+
+```javascript
+const response = await fetch(
+  "https://api-gateway.gates2b.com/payments/v2/crypto",
+  {
+    method: "POST",
+    headers: {
+      Authorization: "Bearer {seu-token}",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      amount: 71.4226873,
+      fiat_currency: "BRL",
+      pay_currency: "USDTBSC",
+      customer_name: "Maria Santos",
+      customer_email: "maria@empresa.com",
+      external_reference: "INV-2024-001",
+    }),
+  },
+);
+
+const data = await response.json();
+```
+
+```python
+import requests
+
+url = "https://api-gateway.gates2b.com/payments/v2/crypto"
+headers = {
+    "Authorization": "Bearer {seu-token}",
+    "Content-Type": "application/json"
+}
+payload = {
+    "amount": 71.4226873,
+    "fiat_currency": "BRL",
+    "pay_currency": "USDTBSC",
+    "customer_name": "Maria Santos",
+    "customer_email": "maria@empresa.com",
+    "external_reference": "INV-2024-001",
+}
+
+response = requests.post(url, headers=headers, json=payload)
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Exito
+{
+  "id": "68d2fa97b30181b2d2f13600",
+  "id_transaction": "d615bb9b-e935-47c4-ac19-ad046e4b5f1a",
+  "status": "WAITING_PAYMENT",
+  "payment_id": "6043353044",
+  "qr_code": "iVBORw0KGgoAAAANSUhEUgAAAJQAAACUCAYAAAB1PADUAAAAAklEQVR4AewaftIAAATVSURBVO3BQY4jRxAEwfAC//9l1x7zVECjk7MjKczwj1QtOaladFK16KRq0UnVopOqRSdVi06qFp1ULTqpWnRSteikatFJ1aKTqkUnVYtOqhZ98hKQn6Tmm4BMaiYgT6h5A8hPUvPGSdWik6pFJ1WLPlmmZhOQJ4DcqJmATGomIDdqboBMat5QswnIppOqRSdVi06qFn3yZUCeUPMEkEnNBGQCMqmZgGxScwNkUvMEkCfUfNNJ1aKTqkUnVYs++Z9RMwGZ1DwBZFIzAblR819yUrXopGrRSdWiT/5ngNwAmdRMQJ5QcwNkUvNvdlK16KRq0UnVok++TM1PAjKpeQPIjZobIJOaSc0ban6Tk6pFJ1WLTqoWfbIMyN+kZgIyqZmATGpu1ExAJjVPAJnU3AD5zU6qFp1ULTqpWvTJS2p+MzVPAJnUPAFkk5p/k5OqRSdVi06qFuEfeQHIpGYCsknNDZAbNU8AmdS8AWRScwNkk5pvOqladFK16KRq0ScvqdmkZpOaGyBPAHlDzQ2QSc0NkEnNDZBJzaaTqkUnVYtOqhZ98hKQbwKyCcik5g0gk5obIJOaSc0NkBsgN2q+6aRq0UnVopOqRZ+8pGYCcqPmCTVPAPkmIG+oeQLIpOYGyKTmJ51ULTqpWnRSteiTL1NzA+QJNTdqJiCTmgnIpGYCMql5AsikZgJyo2YCcqPmBsikZtNJ1aKTqkUnVYvwj7wA5EbNBGRSMwGZ1ExAbtTcAJnUTECeUDMBmdT8JCCTmhsgk5o3TqoWnVQtOqla9MmXAZnUPAFkUjMBmYDcqJmATGqeADKpmYBMam6APKHmCSCTmk0nVYtOqhadVC36ZJmaCcgNkEnNDZBJzQ2QGzUTkEnNBGRSc6NmAnKj5gkgv8lJ1aKTqkUnVYs++TI1E5BJzQTkRs0mIJOaJ4BMap5QMwF5Q80E5AbIpOaNk6pFJ1WLTqoWfbIMyBtqNql5AsgTaiYgN2qeUHMDZAIyqbkBsumkatFJ1aKTqkX4R14AMqm5AfKGmhsgk5pNQCY1TwC5UTMBeULNBGRS800nVYtOqhadVC365MuATGpugExqJiCTmknNBGRSMwGZ1ExAJjUTkEnNjZobIJOaJ4BMaiYgk5pNJ1WLTqoWnVQt+uTL1ExAngAyqZmAPAHkCTU3ap4A8gSQJ9T8TSdVi06qFp1ULfrkJTVPqPlN1DwBZFKzSc0TQJ5QMwGZ1LxxUrXopGrRSdWiT14C8pPUTGpugExq3lDzBJBJzQTkBsik5gkgN2o2nVQtOqladFK16JNlajYBuQEyqZnUTEBu1NwAeQPIE2reUHMDZFLzxknVopOqRSdViz75MiBPqNkEZJOaJ4BMaiYgE5A3gExqbtRsOqladFK16KRq0Sf/MUAmNU8AmdRMQCY1E5An1NwAmdS8AWRSs+mkatFJ1aKTqkWf/McB+ZvU3AC5UTMBuVHzN51ULTqpWnRSteiTL1PzTWpugNyouQFyA2RSMwG5UXMD5EbNb3JSteikatFJ1aJPlgH5SUBu1ExAJiCTmknNJjVPqJmA3ACZ1ExqvumkatFJ1aKTqkX4R6qWnFQtOqladFK16KRq0UnVopOqRSdVi06qFp1ULTqpWnRSteikatFJ1aKTqkUnVYv+AeMiPTU2TMAbAAAAAElFTkSuQmCC",
+  "pay_address": "0x1CEfB8730786f34af8B10dC4e5B8028F79a63abd?amount=13.82478513",
+  "amount": 71.4226873,
+  "currency": "BRL",
+  "expires_at": "2025-09-24T19:52:55.998Z",
+  "redirect_url": null
+}
+```
+
+```json Error - Datos invalidos
+{
+  "error": "validation_error",
+  "message": "Dados de entrada inválidos",
+  "details": {
+    "amount": "Valor deve ser maior que zero",
+    "pay_currency": "Moeda de pagamento não suportada"
+  }
+}
+```
+
+```json Ejemplo con otros valores
+{
+  "id": "7a8b9c0d1e2f3a4b5c6d7e8f",
+  "id_transaction": "f9e8d7c6-b5a4-9382-7160-5f4e3d2c1b0a",
+  "status": "WAITING_PAYMENT",
+  "payment_id": "7890123456",
+  "qr_code": "iVBORw0KGgoAAAANSUhEUgAAAJQAAACUCAYAAAB1PADUAAAAAklEQVR4AewaftIAAATVSURBVO3BQY4jRxAEwfAC//9l1x7zVECjk7MjKczwj1QtOaladFK16KRq0UnVopOqRSdVi06qFp1ULTqpWnRSteikatFJ1aKTqkUnVYtOqhZ98hKQn6Tmm4BMaiYgT6h5A8hPUvPGSdWik6pFJ1WLPlmmZhOQJ4DcqJmATGomIDdqboBMat5QswnIppOqRSdVi06qFn3yZUCeUPMEkEnNBGQCMqmZgGxScwNkUvMEkCfUfNNJ1aKTqkUnVYs++Z9RMwGZ1DwBZFIzAblR819yUrXopGrRSdWiT/5ngNwAmdRMQJ5QcwNkUvNvdlK16KRq0UnVok++TM1PAjKpeQPIjZobIJOaSc0ban6Tk6pFJ1WLTqoWfbIMyN+kZgIyqZmATGpu1ExAJjVPAJnU3AD5zU6qFp1ULTqpWvTJS2p+MzVPAJnUPAFkk5p/k5OqRSdVi06qFuEfeQHIpGYCsknNDZAbNU8AmdS8AWRScwNkk5pvOqladFK16KRq0ScvqdmkZpOaGyBPAHlDzQ2QSc0NkEnNDZBJzaaTqkUnVYtOqhZ98hKQbwKyCcik5g0gk5obIJOaSc0NkBsgN2q+6aRq0UnVopOqRZ+8pGYCcqPmCTVPAPkmIG+oeQLIpOYGyKTmJ51ULTqpWnRSteiTL1NzA+QJNTdqJiCTmgnIpGYCMql5AsikZgJyo2YCcqPmBsikZtNJ1aKTqkUnVYvwj7wA5EbNBGRSMwGZ1ExAbtTcAJnUTECeUDMBmdT8JCCTmhsgk5o3TqoWnVQtOqla9MmXAZnUPAFkUjMBmYDcqJmATGqeADKpmYBMam6APKHmCSCTmk0nVYtOqhadVC36ZJmaCcgNkEnNDZBJzQ2QGzUTkEnNBGRSc6NmAnKj5gkgv8lJ1aKTqkUnVYs++TI1E5BJzQTkRs0mIJOaJ4BMap5QMwF5Q80E5AbIpOaNk6pFJ1WLTqoWfbIMyBtqNql5AsgTaiYgN2qeUHMDZAIyqbkBsumkatFJ1aKTqkX4R14AMqm5AfKGmhsgk5pNQCY1TwC5UTMBeULNBGRS800nVYtOqhadVC365MuATGpugExqJiCTmknNBGRSMwGZ1ExAJjUTkEnNjZobIJOaJ4BMaiYgk5pNJ1WLTqoWnVQt+uTL1ExAngAyqZmAPAHkCTU3ap4A8gSQJ9T8TSdVi06qFp1ULfrkJTVPqPlN1DwBZFKzSc0TQJ5QMwGZ1LxxUrXopGrRSdWiT14C8pPUTGpugExq3lDzBJBJzQTkBsik5gkgN2o2nVQtOqladFK16JNlajYBuQEyqZnUTEBu1NwAeQPIE2reUHMDZFLzxknVopOqRSdViz75MiBPqNkEZJOaJ4BMaiYgE5A3gExqbtRsOqladFK16KRq0Sf/MUAmNU8AmdRMQCY1E5An1NwAmdS8AWRSs+mkatFJ1aKTqkWf/McB+ZvU3AC5UTMBuVHzN51ULTqpWnRSteiTL1PzTWpugNyouQFyA2RSMwG5UXMD5EbNb3JSteikatFJ1aJPlgH5SUBu1ExAJiCTmknNJjVPqJmA3ACZ1ExqvumkatFJ1aKTqkX4R6qWnFQtOqladFK16KRq0UnVopOqRSdVi06qFp1ULTqpWnRSteikatFJ1aKTqkUnVYv+AeMiPTU2TMAbAAAAAElFTkSuQmCC",
+  "pay_address": "0x9F8e2A3B4C5D6E7F8A9B0C1D2E3F4A5B6C7D8E9F?amount=25.12345678",
+  "amount": 150.75,
+  "currency": "USD",
+  "expires_at": "2025-10-15T14:30:45.123Z",
+  "redirect_url": "https://meusite.com/retorno-pagamento"
+}
+```
+
+</ResponseExample>

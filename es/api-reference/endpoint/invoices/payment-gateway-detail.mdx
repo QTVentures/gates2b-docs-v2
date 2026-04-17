@@ -1,0 +1,137 @@
+---
+title: "Buscar Invoice de Crypto por ID"
+sidebarTitle: "/invoices/payment-gateway/{id}"
+api: "GET https://api.gates2b.com/invoices/payment-gateway/{id}"
+authMethod: "authorization"
+description: "Este endpoint retorna los detalles completos de una invoice de crypto (pago via gateway) segun su ID."
+---
+
+<ParamField
+  header="Authorization"
+  type="string"
+  placeholder="Bearer {token}"
+  required
+>
+  El token de autenticacion en formato Bearer es obligatorio para acceder a este
+  endpoint.
+</ParamField>
+
+<ParamField
+  path="id"
+  type="string"
+  placeholder="68d2fa97b30181b2d2f13600"
+  required
+>
+  El ID unico de la invoice de crypto que deseas consultar.
+</ParamField>
+
+### Response
+
+<ResponseField name="status" type="number">
+  Indica el codigo HTTP de la respuesta. Esperado: 200 (OK).
+</ResponseField>
+
+<ResponseField name="code" type="string">
+  El codigo de estado de la respuesta.
+</ResponseField>
+
+<ResponseField name="response" type="object">
+Contenido de la respuesta con los detalles de la invoice.
+
+<Expandable title="Mostrar objeto">
+
+<ResponseField name="id" type="string">
+  Identificador unico de la invoice.
+</ResponseField>
+
+<ResponseField name="type" type="string">
+  Tipo de la invoice (PAYMENT o WITHDRAWAL).
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Estado actual de la invoice.
+</ResponseField>
+
+<ResponseField name="amount" type="number">
+  Monto de la transaccion.
+</ResponseField>
+
+<ResponseField name="currency" type="string">
+  Moneda utilizada en la transaccion.
+</ResponseField>
+
+<ResponseField name="gateway" type="string">
+  Nombre del gateway utilizado (ej: NOWPAYMENTS).
+</ResponseField>
+
+<ResponseField name="user_id" type="number">
+  ID del usuario propietario de la invoice.
+</ResponseField>
+
+<ResponseField name="external_reference" type="string">
+  Referencia externa de la aplicacion.
+</ResponseField>
+
+<ResponseField name="createdAt" type="string">
+  Fecha de creacion de la invoice (formato ISO).
+</ResponseField>
+
+<ResponseField name="updatedAt" type="string">
+  Fecha de la ultima actualizacion de la invoice (formato ISO).
+</ResponseField>
+
+<ResponseField name="payment_details" type="object">
+  Detalles especificos del pago.
+<Expandable title="Mostrar objeto">
+<ResponseField name="pay_address" type="string">
+  Direccion para envio de fondos (cartera de destino).
+</ResponseField>
+
+<ResponseField name="qr_code" type="string">
+  QR code en formato base64 para facilitar el pago.
+</ResponseField>
+
+<ResponseField name="expires_at" type="string">
+  Fecha y hora de expiracion del pago (formato ISO).
+</ResponseField>
+
+<ResponseField name="pay_currency" type="string">
+  Criptomoneda utilizada para el pago (ej: USDTBSC, BTC, ETH).
+</ResponseField>
+
+<ResponseField name="fiat_currency" type="string">
+  Moneda fiat de referencia (ej: BRL, USD).
+</ResponseField>
+</Expandable>
+</ResponseField>
+
+</Expandable>
+</ResponseField>
+
+<ResponseExample>
+```json
+{
+  "status": 200,
+  "code": "success",
+  "response": {
+    "id": "68d2fa97b30181b2d2f13600",
+    "type": "PAYMENT",
+    "status": "WAITING_PAYMENT",
+    "amount": 71.4226873,
+    "currency": "BRL",
+    "gateway": "NOWPAYMENTS",
+    "user_id": 123,
+    "external_reference": "INV-2024-001",
+    "createdAt": "2024-09-24T19:52:55.998Z",
+    "updatedAt": "2024-09-24T19:52:55.998Z",
+    "payment_details": {
+      "pay_address": "0x1CEfB8730786f34af8B10dC4e5B8028F79a63abd",
+      "qr_code": "iVBORw0KGgoAAAANSUhEUgAAAJQAAACUCAYAAAB1PADUAAAAAklEQVR4AewaftIAAATVSURBVO3BQY4jRxAEwfAC//9l1x7zVECjk7MjKczwj1QtOaladFK16KRq0UnVopOqRSdVi06qFp1ULTqpWnRSteikatFJ1aKTqkUnVYtOqhZ98hKQn6Tmm4BMaiYgT6h5A8hPUvPGSdWik6pFJ1WLPlmmZhOQJ4DcqJmATGomIDdqboBMat5QswnIppOqRSdVi06qFn3yZUCeUPMEkEnNBGQCMqmZgGxScwNkUvMEkCfUfNNJ1aKTqkUnVYs++Z9RMwGZ1DwBZFIzAblR819yUrXopGrRSdWiT/5ngNwAmdRMQJ5QcwNkUvNvdlK16KRq0UnVok++TM1PAjKpeQPIjZobIJOaSc0ban6Tk6pFJ1WLTqoWfbIMyN+kZgIyqZmATGpu1ExAJjVPAJnU3AD5zU6qFp1ULTqpWvTJS2p+MzVPAJnUPAFkk5p/k5OqRSdVi06qFuEfeQHIpGYCsknNDZAbNU8AmdS8AWRScwNkk5pvOqladFK16KRq0ScvqdmkZpOaGyBPAHlDzQ2QSc0NkEnNDZBJzaaTqkUnVYtOqhZ98hKQbwKyCcik5g0gk5obIJOaSc0NkBsgN2q+6aRq0UnVopOqRZ+8pGYCcqPmCTVPAPkmIG+oeQLIpOYGyKTmJ51ULTqpWnRSteiTL1NzA+QJNTdqJiCTmgnIpGYCMql5AsikZgJyo2YCcqPmBsikZtNJ1aKTqkUnVYvwj7wA5EbNBGRSMwGZ1ExAbtTcAJnUTECeUDMBmdT8JCCTmhsgk5o3TqoWnVQtOqla9MmXAZnUPAFkUjMBmYDcqJmATGqeADKpmYBMam6APKHmCSCTmk0nVYtOqhadVC36ZJmaCcgNkEnNDZBJzQ2QGzUTkEnNBGRSc6NmAnKj5gkgv8lJ1aKTqkUnVYs++TI1E5BJzQTkRs0mIJOaJ4BMap5QMwF5Q80E5AbIpOaNk6pFJ1WLTqoWfbIMyBtqNql5AsgTaiYgN2qeUHMDZAIyqbkBsumkatFJ1aKTqkX4R14AMqm5AfKGmhsgk5pNQCY1TwC5UTMBeULNBGRS800nVYtOqhadVC365MuATGpugExqJiCTmknNBGRSMwGZ1ExAJjUTkEnNjZobIJOaJ4BMaiYgk5pNJ1WLTqoWnVQt+uTL1ExAngAyqZmAPAHkCTU3ap4A8gSQJ9T8TSdVi06qFp1ULfrkJTVPqPlN1DwBZFKzSc0TQJ5QMwGZ1LxxUrXopGrRSdWiT14C8pPUTGpugExq3lDzBJBJzQTkBsik5gkgN2o2nVQtOqladFK16JNlajYBuQEyqZnUTEBu1NwAeQPIE2reUHMDZFLzxknVopOqRSdViz75MiBPqNkEZJOaJ4BMaiYgE5A3gExqbtRsOqladFK16KRq0Sf/MUAmNU8AmdRMQCY1E5An1NwAmdS8AWRSs+mkatFJ1aKTqkWf/McB+ZvU3AC5UTMBuVHzN51ULTqpWnRSteiTL1PzTWpugNyouQFyA2RSMwG5UXMD5EbNb3JSteikatFJ1aJPlgH5SUBu1ExAJiCTmknNJjVPqJmA3ACZ1ExqvumkatFJ1aKTqkX4R6qWnFQtOqladFK16KRq0UnVopOqRSdVi06qFp1ULTqpWnRSteikatFJ1aKTqkUnVYv+AeMiPTU2TMAbAAAAAElFTkSuQmCC",
+      "expires_at": "2024-09-24T20:52:55.998Z",
+      "pay_currency": "USDTBSC",
+      "fiat_currency": "BRL"
+    }
+  }
+}
+```
+</ResponseExample>

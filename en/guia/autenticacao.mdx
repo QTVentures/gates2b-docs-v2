@@ -1,0 +1,84 @@
+---
+title: "Authentication"
+description: "See how to authenticate in our API."
+---
+
+## How does authentication work in the Gates2b API?
+
+Authentication in our API is done through the use of an API Key. This key allows our system to identify your account and communicate with us on behalf of that account.
+
+If the API key is invalid, not provided, or the header is incorrect, our API will return `HTTP 401`.
+
+## What is an API Key?
+
+An **API Key** is a unique and secret credential that identifies your account when making requests to the Gates2b API. It works like a "password" that allows your system to communicate securely with our platform.
+
+### Why do I need an API Key?
+
+- **Authentication**: Ensures only you have access to your account resources
+- **Security**: Protects your transactions and data
+- **Identification**: Allows our system to identify your requests
+
+## Video Tutorial
+
+Watch the video below to learn how to generate your API Key:
+
+<video
+  controls
+  className="w-full aspect-video"
+  src="https://res.cloudinary.com/dxde8qjio/video/upload/v1768997137/tutorial_gkgqrf.mp4"
+></video>
+
+## How to generate your API Key
+
+<Steps>
+  <Step title="Access the Dashboard">
+    Log in to the [Gates2b control panel](https://painel.gates2b.com) with your
+    credentials.
+  </Step>
+  <Step title="Navigate to Integration">
+    In the sidebar menu, click the **Integration** tab.
+  </Step>
+  <Step title="Generate your API Key">
+    Click the button to generate a new API key and copy it immediately.
+  </Step>
+  <Step title="Store it securely">
+    Store your API Key in a safe place. It will be displayed only once!
+  </Step>
+</Steps>
+
+### Use the headers below in all your API calls:
+
+```json
+"Content-Type": "application/json",
+"Authorization": "Bearer sua_api_key"
+```
+
+### Important tips:
+
+<Warning>
+  After generating the API key in our interface, store it directly in your key
+  vault, avoiding exposure in any kind of messages or emails. Never leave the
+  API key directly in your source code.
+</Warning>
+
+<Warning>
+  Do not share your API key in support requests, with third parties, or expose
+  it in the front-end of your application. Ensure your application does not
+  expose the key in system logs.
+</Warning>
+
+<Tip>
+  If you suspect your API Key was compromised, generate a new one immediately in
+  the control panel.
+</Tip>
+
+## Next Steps
+
+<Card
+  title="First Request"
+  icon="rocket"
+  href="/en/api-reference/endpoint/api-key-validate"
+>
+  Validate your API Key with a test call
+</Card>

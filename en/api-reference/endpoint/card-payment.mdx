@@ -1,0 +1,311 @@
+---
+title: "Create Credit Card Payment"
+sidebarTitle: "/payments/v1/card"
+api: "POST https://api.gates2b.com/payments/v1/card"
+authMethod: "authorization"
+description: "Creates a credit card payment with configurable installments."
+---
+
+<ParamField
+  header="Authorization"
+  type="string"
+  placeholder="Bearer {token}"
+  required
+>
+  The Bearer authentication token is required to access this endpoint.
+</ParamField>
+
+<ParamField
+  body="clientMode"
+  type="string"
+  placeholder="noNeedToSpecify | fillDataNow | requestCheckout"
+  required
+>
+  Defines how customer data is handled. - `noNeedToSpecify`: No customer data
+  required. - `fillDataNow`: Customer data must be provided now. -
+  `requestCheckout`: Customer data will be collected via checkout.
+</ParamField>
+
+<ParamField body="amount" type="number" placeholder="3.05" required>
+  Payment amount.
+</ParamField>
+
+<ParamField
+  body="expire_at"
+  type="string"
+  placeholder="2025-12-30T03:00:00.000Z"
+  required
+>
+  Expiration date and time in ISO 8601 format.
+</ParamField>
+
+<ParamField body="installments" type="number" placeholder="12" required>
+  Number of installments (1 to 24).
+</ParamField>
+
+### Response
+
+<ResponseField name="id" type="number">
+  Unique ID of the created transaction.
+</ResponseField>
+
+<ResponseField name="amount" type="number">
+  Payment amount.
+</ResponseField>
+
+<ResponseField name="description" type="string">
+  Payment description.
+</ResponseField>
+
+<ResponseField name="clientMode" type="string">
+  Customer data handling mode.
+</ResponseField>
+
+<ResponseField name="redirect_url" type="string">
+  Redirect URL after payment.
+</ResponseField>
+
+<ResponseField name="email" type="string">
+  Customer email.
+</ResponseField>
+
+<ResponseField name="phoneNumber" type="string">
+  Customer phone number.
+</ResponseField>
+
+<ResponseField name="document_type" type="string">
+  Customer document type.
+</ResponseField>
+
+<ResponseField name="expire_at" type="string">
+  Transaction expiration date and time.
+</ResponseField>
+
+<ResponseField name="document_client" type="string">
+  Customer document.
+</ResponseField>
+
+<ResponseField name="document_type_client" type="string">
+  Customer document type.
+</ResponseField>
+
+<ResponseField name="name_client" type="string">
+  Customer name.
+</ResponseField>
+
+<ResponseField name="id_transaction" type="string">
+  Transaction ID (UUID).
+</ResponseField>
+
+<ResponseField name="emv" type="string">
+  Card EMV data (when applicable).
+</ResponseField>
+
+<ResponseField name="name_receiver" type="string">
+  Receiver name.
+</ResponseField>
+
+<ResponseField name="international_status" type="string">
+  International transaction status. Possible values: - `WAITING_PAYMENT`:
+  Waiting for payment - `PAID`: Paid - `DENIED`: Denied - `CANCELED`: Canceled -
+  `REFUNDED`: Refunded
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Transaction status in Portuguese.
+</ResponseField>
+
+<ResponseField name="checkout_id" type="number">
+  Generated checkout ID.
+</ResponseField>
+
+<ResponseField name="checkout_url" type="string">
+  Checkout URL where the customer can fill in card details.
+</ResponseField>
+
+<ResponseField name="createdAt" type="string">
+  Transaction creation date and time (ISO 8601).
+</ResponseField>
+
+<ResponseField name="updatedAt" type="string">
+  Last update date and time (ISO 8601).
+</ResponseField>
+
+<ResponseField name="installments" type="number">
+  Configured number of installments.
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl -X POST "https://api.gates2b.com/payments/v1/card" \
+  -H "Authorization: Bearer {seu-token}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "clientMode": "noNeedToSpecify",
+    "amount": 3.05,
+    "expire_at": "2025-12-30T03:00:00.000Z",
+    "installments": 12
+  }'
+```
+
+```javascript
+const response = await fetch("https://api.gates2b.com/payments/v1/card", {
+  method: "POST",
+  headers: {
+    Authorization: "Bearer {seu-token}",
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    data: {
+      clientMode: "noNeedToSpecify",
+      amount: 3.05,
+      expire_at: "2025-12-30T03:00:00.000Z",
+      type: "VENDA",
+      installments: 12,
+    },
+    body: JSON.stringify({
+      clientMode: "noNeedToSpecify",
+      amount: 3.05,
+      expire_at: "2025-12-30T03:00:00.000Z",
+      installments: 12,
+    }),
+  }
+);
+
+const data = await response.json();
+```
+
+```python
+import requests
+
+url = "https://api.gates2b.com/payments/v1/card"
+headers = {
+    "Authorization": "Bearer {seu-token}",
+    "Content-Type": "application/json"
+}
+payload = {
+    "clientMode": "noNeedToSpecify",
+    "amount": 3.05,
+    "expire_at": "2025-12-30T03:00:00.000Z",
+    "installments": 12
+}
+
+response = requests.post(url, headers=headers, json=payload)
+data = response.json()
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Success
+{
+  "id": 3577,
+  "amount": 3.05,
+  "description": null,
+  "clientMode": "noNeedToSpecify",
+  "redirect_url": null,
+  "email": null,
+  "phoneNumber": null,
+  "document_type": null,
+  "expire_at": "2025-12-30T03:00:00.000Z",
+  "document_client": null,
+  "document_type_client": null,
+  "name_client": null,
+  "id_transaction": "7ddc71cb-66a8-4c48-b509-706b2db0e37a",
+  "emv": null,
+  "name_receiver": "Clever Meireles Lopes Junior",
+  "international_status": "WAITING_PAYMENT",
+  "status": "Aguardando pagamento",
+  "checkout_id": 1,
+  "checkout_url": "https://pay.gates2b.com/7ddc71cb-66a8-4c48-b509-706b2db0e37a",
+  "createdAt": "2025-12-10T19:53:09.078Z",
+  "updatedAt": "2025-12-10T19:53:09.078Z",
+  "installments": 12
+}
+```
+
+```json Error - Invalid data
+{
+  "error": "Bad Request",
+  "message": "Dados inválidos no payload",
+  "statusCode": 400
+}
+```
+
+```json Error - Unauthorized
+{
+  "error": "Unauthorized",
+  "message": "Token de autenticação ausente ou inválido",
+  "statusCode": 401
+}
+```
+
+```json Error - Server
+{
+  "error": "Internal Server Error",
+  "message": "Erro ao criar pagamento",
+  "statusCode": 500
+}
+```
+
+</ResponseExample>
+
+## Important Notes
+
+### Transaction Status
+
+After creation, the transaction is in status `WAITING_PAYMENT` (Waiting for payment). Possible statuses are:
+
+- **WAITING_PAYMENT**: Waiting for payment
+- **PAID**: Payment approved and processed
+- **DENIED**: Payment declined
+- **CANCELED**: Transaction canceled
+- **REFUNDED**: Payment refunded
+
+### Checkout URL
+
+The returned `checkout_url` can be used to direct the customer to a hosted checkout page, where they can securely enter card details.
+
+### Installments
+
+- **Available installments**: 1 to 24 installments
+- **Minimum amount**: Check your account-specific configuration
+- **Fees**: Automatically calculated based on configuration and number of installments
+
+### Client Mode
+
+The `clientMode` field defines how customer data will be handled:
+
+- **noNeedToSpecify**: No customer data required at creation
+- **fillDataNow**: Customer data must be provided in the payload
+- **requestCheckout**: Customer data will be collected via checkout
+
+### Expiration
+
+The expiration date (`expire_at`) must be provided in ISO 8601 format. After expiration, the transaction can no longer be paid.
+
+### HTTP Status Codes
+
+- **201**: Payment created successfully
+- **400**: Invalid payload data
+- **401**: Missing or invalid authentication token
+- **500**: Internal error creating payment
+
+### Validations
+
+1. **Amount**: Must be greater than 0
+2. **Installments**: Must be between 1 and 24
+3. **Expiration Date**: Must be a future date
+
+### Best Practices
+
+<Tip>
+  1. **Store the Transaction ID**: Save the `id_transaction` in your database
+  along with the order 2. **Checkout URL**: Use `checkout_url` to redirect the
+  customer to the secure checkout 3. **Webhook**: Configure webhooks to receive
+  status change notifications 4. **Expiration**: Set a proper expiration time
+  (e.g., 30 minutes, 24 hours) 5. **Installments**: Consider fee impact when
+  choosing the number of installments
+</Tip>

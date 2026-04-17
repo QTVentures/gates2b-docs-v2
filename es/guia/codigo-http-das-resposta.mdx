@@ -1,0 +1,30 @@
+---
+title: "Codigos HTTP de Respuesta"
+description: "Nuestra API utiliza respuestas HTTP convencionales para indicar exito o fallo en las solicitudes. Las respuestas con estado 200 indican exito, los 4xx indican fallos por errores en la informacion enviada y los 500 indican errores internos en nuestro servidor."
+---
+
+<Info>
+  **Atencion** Todos los endpoints de la API reciben y responden en JSON.
+</Info>
+
+```json
+{
+  "errors": [
+    {
+      "code": "invalid_amount",
+      "description": "O campo amount deve ser informado"
+    }
+  ]
+}
+```
+
+| Codigo HTTP                      | Descripcion                                                                                                                         |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| 200 OK                           | Tu solicitud fue exitosa.                                                                                                           |
+| 400 Bad Request                  | Falta un parametro obligatorio o es invalido. En este caso, la propia respuesta indicara cual es el problema.                       |
+| 401 Unauthorized                 | No se envio el Bearer Token o es invalido.                                                                                          |
+| 403 Forbidden                    | Solicitud no autorizada. El abuso de la API o el uso de parametros no permitidos pueden generar este codigo.                        |
+| 403 Forbidden / Cloudfront (GET) | Errores 403 en llamadas GET indican que estas enviando un body junto con la solicitud. No debes enviar ningun body en llamadas GET. |
+| 404 Not Found                    | El endpoint o el objeto solicitado no existe.                                                                                       |
+| 429 Too Many Requests            | Demasiadas solicitudes en un periodo determinado. Mas en nuestra seccion de Rate Limiting.                                          |
+| 500 Internal Server Error        | Algo salio mal en el servidor de gates2b.                                                                                           |

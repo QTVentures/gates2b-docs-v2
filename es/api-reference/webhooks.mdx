@@ -1,0 +1,51 @@
+---
+title: "Webhooks"
+icon: "bell"
+description: "Los webhooks permiten recibir notificaciones automaticas cuando ocurren eventos importantes en tu cuenta Gates2b. Esto facilita la integracion y la automatizacion de procesos."
+---
+
+## Que son los Webhooks?
+
+Los webhooks son callbacks HTTP que envian datos en tiempo real a una URL configurada por ti cada vez que ocurren determinados eventos. Esto elimina la necesidad de consultar la API repetidamente.
+
+## Que eventos se envian?
+
+Actualmente, el webhook se dispara cada vez que cambia el estado de una venta.  
+Ejemplo de estado enviado: **PAID** (Pago realizado).
+
+## Como configurar un Webhook?
+
+1. **Accede al Panel de Integracion:** Entra en [painel.gates2b.com](https://painel.gates2b.com).
+2. **Navega a Integracion:** Haz clic en la opcion **Integracion** en la barra de navegacion.
+3. **Registra la URL del Webhook:** Agrega la URL donde deseas recibir las notificaciones y guarda los cambios.
+
+<Tip>Puedes registrar multiples URLs para diferentes tipos de eventos.</Tip>
+
+## Ejemplo de Payload (Estado: PAID)
+
+```json
+{
+  "id": 72276,
+  "id_transaction": "26182891-7569-414f-aa60-ajkw1jke21",
+  "transaction_pix_id": "asqw2143-50d3-4de7-911d-awqasq131",
+  "external_reference": "2508280924481163",
+  "emv": "1231as12-aqkelqk-4de7-911d-ekajwkalq",
+  "amount": 120,
+  "status": "Pagamento realizado",
+  "international_status": "PAYMENT_RECEIVED",
+  "name_client": "JOAO PAULO SILVA CRUZ DE LIMA",
+  "document_client": "0000000000",
+  "createdAt": "2025-08-28T12:24:49.056Z",
+  "my_origin": "Gates2b",
+  "method": "Gates2b",
+  "user": {}
+}
+```
+
+## Politica de Retry
+
+Si la URL configurada no responde con estado HTTP 2xx, nuestro sistema intentara reenviar la notificacion hasta 3 veces con intervalos progresivos. Si el error persiste, sera necesario consultar la API manualmente.
+
+## Soporte
+
+Si tienes alguna duda o necesitas asistencia, contactanos en [suporte@gates2b.com.br](mailto:suporte@gates2b.com.br). Nuestro equipo esta disponible para asegurar la mejor experiencia de integracion.

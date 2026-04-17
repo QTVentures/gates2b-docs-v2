@@ -1,0 +1,214 @@
+---
+title: "Listar Invoices de Crypto"
+sidebarTitle: "/invoices/payment-gateway"
+api: "GET https://api.gates2b.com/invoices/payment-gateway"
+authMethod: "authorization"
+description: "Esse endpoint lista as invoices de crypto (pagamentos via gateway) com suporte a filtros avançados."
+---
+
+<ParamField
+  header="Authorization"
+  type="string"
+  placeholder="Bearer {token}"
+  required
+>
+  O token de autenticação no formato Bearer é obrigatório para acessar este
+  endpoint.
+</ParamField>
+
+<ParamField query="page" type="number" placeholder="1">
+  Número da página (padrão: 1). Valor mínimo: 1.
+</ParamField>
+
+<ParamField query="quantityPerPage" type="number" placeholder="10">
+  Itens por página (padrão: 10). Valor mínimo: 1.
+</ParamField>
+
+<ParamField query="orderBy" type="string" placeholder="createdAt.DESC">
+  Ordenação por campo.direção (ex: createdAt.DESC, amount.ASC).
+</ParamField>
+
+<ParamField query="type" type="string" placeholder="PAYMENT | WITHDRAWAL">
+  Filtrar por tipo de invoice (PAYMENT ou WITHDRAWAL). Convertido
+  automaticamente para maiúsculo.
+</ParamField>
+
+<ParamField query="status" type="string" placeholder="WAITING_PAYMENT">
+  Filtrar por status da invoice.
+</ParamField>
+
+<ParamField query="gateway" type="string" placeholder="NOWPAYMENTS">
+  Filtrar por nome do gateway.
+</ParamField>
+
+<ParamField
+  query="start_date"
+  type="string"
+  placeholder="2024-01-01T00:00:00.000Z"
+>
+  Data inicial para filtro de período (formato ISO string).
+</ParamField>
+
+<ParamField
+  query="end_date"
+  type="string"
+  placeholder="2024-12-31T23:59:59.999Z"
+>
+  Data final para filtro de período (formato ISO string).
+</ParamField>
+
+<ParamField query="user_id" type="number" placeholder="123">
+  Filtrar por ID do usuário (apenas para admin/operador).
+</ParamField>
+
+<ParamField query="query" type="string" placeholder="João Silva">
+  Busca geral por texto.
+</ParamField>
+
+### Response
+
+<ResponseField name="status" type="number">
+  Indica o código HTTP da resposta. Esperado: 200 (OK).
+</ResponseField>
+
+<ResponseField name="code" type="string">
+  O código de status da resposta.
+</ResponseField>
+
+<ResponseField name="response" type="object">
+Conteúdo da resposta.
+
+<Expandable title="Mostrar objeto">
+<ResponseField name="data" type="array">
+  Lista de invoices retornadas.
+<Expandable title="Mostrar array">
+
+<ResponseField name="id" type="string">
+  Identificador único da invoice.
+</ResponseField>
+
+<ResponseField name="type" type="string">
+  Tipo da invoice (PAYMENT ou WITHDRAWAL).
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Status atual da invoice.
+</ResponseField>
+
+<ResponseField name="amount" type="number">
+  Valor da transação.
+</ResponseField>
+
+<ResponseField name="currency" type="string">
+  Moeda utilizada na transação.
+</ResponseField>
+
+<ResponseField name="gateway" type="string">
+  Nome do gateway utilizado.
+</ResponseField>
+
+<ResponseField name="user_id" type="number">
+  ID do usuário proprietário da invoice.
+</ResponseField>
+
+<ResponseField name="external_reference" type="string">
+  Referência externa da aplicação.
+</ResponseField>
+
+<ResponseField name="createdAt" type="string">
+  Data de criação da invoice.
+</ResponseField>
+
+<ResponseField name="updatedAt" type="string">
+  Data da última atualização da invoice.
+</ResponseField>
+
+<ResponseField name="payment_details" type="object">
+  Detalhes específicos do pagamento.
+<Expandable title="Mostrar objeto">
+<ResponseField name="pay_address" type="string">
+  Endereço para envio dos fundos.
+</ResponseField>
+
+<ResponseField name="qr_code" type="string">
+  QR code em base64 para pagamento.
+</ResponseField>
+
+<ResponseField name="expires_at" type="string">
+  Data de expiração do pagamento.
+</ResponseField>
+
+<ResponseField name="pay_currency" type="string">
+  Criptomoeda utilizada para pagamento.
+</ResponseField>
+
+<ResponseField name="fiat_currency" type="string">
+  Moeda fiat de referência.
+</ResponseField>
+</Expandable>
+</ResponseField>
+
+</Expandable>
+</ResponseField>
+
+<ResponseField name="pagination" type="object">
+  Informações de paginação.
+<Expandable title="Mostrar objeto">
+<ResponseField name="page" type="number">
+  Página atual.
+</ResponseField>
+
+<ResponseField name="quantityPerPage" type="number">
+  Quantidade de itens por página.
+</ResponseField>
+
+<ResponseField name="total" type="number">
+  Total de registros encontrados.
+</ResponseField>
+
+<ResponseField name="totalPages" type="number">
+  Total de páginas disponíveis.
+</ResponseField>
+</Expandable>
+</ResponseField>
+
+</Expandable>
+</ResponseField>
+
+<ResponseExample>
+```json
+{
+  "status": 200,
+  "code": "success",
+  "response": {
+    "data": [
+      {
+        "id": "68d2fa97b30181b2d2f13600",
+        "type": "PAYMENT",
+        "status": "WAITING_PAYMENT",
+        "amount": 71.4226873,
+        "currency": "BRL",
+        "gateway": "NOWPAYMENTS",
+        "user_id": 123,
+        "external_reference": "INV-2024-001",
+        "createdAt": "2024-09-24T19:52:55.998Z",
+        "updatedAt": "2024-09-24T19:52:55.998Z",
+        "payment_details": {
+          "pay_address": "0x1CEfB8730786f34af8B10dC4e5B8028F79a63abd",
+          "qr_code": "iVBORw0KGgoAAAANSUhEUgAAAJQAAACUCAYAAAB1PADUAAAAAklEQVR4AewaftIAAATVSURBVO3BQY4jRxAEwfAC//9l1x7zVECjk7MjKczwj1QtOaladFK16KRq0UnVopOqRSdVi06qFp1ULTqpWnRSteikatFJ1aKTqkUnVYtOqhZ98hKQn6Tmm4BMaiYgT6h5A8hPUvPGSdWik6pFJ1WLPlmmZhOQJ4DcqJmATGomIDdqboBMat5QswnIppOqRSdVi06qFn3yZUCeUPMEkEnNBGQCMqmZgGxScwNkUvMEkCfUfNNJ1aKTqkUnVYs++Z9RMwGZ1DwBZFIzAblR819yUrXopGrRSdWiT/5ngNwAmdRMQJ5QcwNkUvNvdlK16KRq0UnVok++TM1PAjKpeQPIjZobIJOaSc0ban6Tk6pFJ1WLTqoWfbIMyN+kZgIyqZmATGpu1ExAJjVPAJnU3AD5zU6qFp1ULTqpWvTJS2p+MzVPAJnUPAFkk5p/k5OqRSdVi06qFuEfeQHIpGYCsknNDZAbNU8AmdS8AWRScwNkk5pvOqladFK16KRq0ScvqdmkZpOaGyBPAHlDzQ2QSc0NkEnNDZBJzaaTqkUnVYtOqhZ98hKQbwKyCcik5g0gk5obIJOaSc0NkBsgN2q+6aRq0UnVopOqRZ+8pGYCcqPmCTVPAPkmIG+oeQLIpOYGyKTmJ51ULTqpWnRSteiTL1NzA+QJNTdqJiCTmgnIpGYCMql5AsikZgJyo2YCcqPmBsikZtNJ1aKTqkUnVYvwj7wA5EbNBGRSMwGZ1ExAbtTcAJnUTECeUDMBmdT8JCCTmhsgk5o3TqoWnVQtOqla9MmXAZnUPAFkUjMBmYDcqJmATGqeADKpmYBMam6APKHmCSCTmk0nVYtOqhadVC36ZJmaCcgNkEnNDZBJzQ2QGzUTkEnNBGRSc6NmAnKj5gkgv8lJ1aKTqkUnVYs++TI1E5BJzQTkRs0mIJOaJ4BMap5QMwF5Q80E5AbIpOaNk6pFJ1WLTqoWfbIMyBtqNql5AsgTaiYgN2qeUHMDZAIyqbkBsumkatFJ1aKTqkX4R14AMqm5AfKGmhsgk5pNQCY1TwC5UTMBeULNBGRS800nVYtOqhadVC365MuATGpugExqJiCTmknNBGRSMwGZ1ExAJjUTkEnNjZobIJOaJ4BMaiYgk5pNJ1WLTqoWnVQt+uTL1ExAngAyqZmAPAHkCTU3ap4A8gSQJ9T8TSdVi06qFp1ULfrkJTVPqPlN1DwBZFKzSc0TQJ5QMwGZ1LxxUrXopGrRSdWiT14C8pPUTGpugExq3lDzBJBJzQTkBsik5gkgN2o2nVQtOqladFK16JNlajYBuQEyqZnUTEBu1NwAeQPIE2reUHMDZFLzxknVopOqRSdViz75MiBPqNkEZJOaJ4BMaiYgE5A3gExqbtRsOqladFK16KRq0Sf/MUAmNU8AmdRMQCY1E5An1NwAmdS8AWRSs+mkatFJ1aKTqkWf/McB+ZvU3AC5UTMBuVHzN51ULTqpWnRSteiTL1PzTWpugNyouQFyA2RSMwG5UXMD5EbNb3JSteikatFJ1aJPlgH5SUBu1ExAJiCTmknNJjVPqJmA3ACZ1ExqvumkatFJ1aKTqkX4R6qWnFQtOqladFK16KRq0UnVopOqRSdVi06qFp1ULTqpWnRSteikatFJ1aKTqkUnVYv+AeMiPTU2TMAbAAAAAElFTkSuQmCC",
+          "expires_at": "2024-09-24T20:52:55.998Z",
+          "pay_currency": "USDTBSC",
+          "fiat_currency": "BRL"
+        }
+      }
+    ],
+    "pagination": {
+      "page": 1,
+      "quantityPerPage": 10,
+      "total": 1,
+      "totalPages": 1
+    }
+  }
+}
+```
+</ResponseExample>

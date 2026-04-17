@@ -1,0 +1,31 @@
+---
+title: "Authentication"
+description: "See how to authenticate in our API."
+---
+
+## How does authentication work in the Gates2b API?
+
+Authentication in our API is done through the use of an API Key. This key allows our system to identify your account and communicate with us on behalf of that account.
+
+If the API key is invalid, not provided, or the header is incorrect, our API will return `HTTP 401`.
+
+### Use the headers below in all your API calls:
+
+```json
+"Content-Type": "application/json",
+"Authorization": "Bearer sua_api_key"
+```
+
+### Important tips:
+
+<Warning>
+  After generating the API key in our interface, store it directly in your key
+  vault, avoiding exposure in any kind of messages or emails. Never leave the
+  API key directly in your source code.
+</Warning>
+
+<Warning>
+  Do not share your API key in support requests, with third parties, or expose
+  it in the front-end of your application. Ensure your application does not
+  expose the key in system logs.
+</Warning>

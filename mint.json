@@ -1,0 +1,139 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "Documentação Gates2b",
+  "i18n": {
+    "defaultLocale": "pt",
+    "locales": [
+      {
+        "locale": "pt",
+        "name": "Português"
+      },
+      {
+        "locale": "en",
+        "name": "English"
+      },
+      {
+        "locale": "es",
+        "name": "Español"
+      }
+    ]
+  },
+  "api": {
+    "auth": {
+      "method": "key",
+      "name": "Authorization"
+    },
+    "playground": {
+      "mode": "show"
+    }
+  },
+  "logo": {
+    "dark": "assets/logos/BPIXWhite.svg",
+    "light": "assets/logos/BPIX.svg"
+  },
+  "favicon": "assets/favicon.svg",
+  "colors": {
+    "primary": "#1a56db",
+    "light": "#1a56db",
+    "dark": "#1a56db",
+    "anchors": {
+      "from": "#1a56db",
+      "to": "#1a56db"
+    }
+  },
+  "topbarLinks": [
+    {
+      "name": "Suporte",
+      "url": "https://t.me/Gates2b"
+    },
+    {
+      "name": "PT",
+      "url": "https://docs.gates2b.com/"
+    },
+    {
+      "name": "EN",
+      "url": "https://docs.gates2b.com/en"
+    },
+    {
+      "name": "ES",
+      "url": "https://docs.gates2b.com/es"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Painel",
+    "url": "https://painel.gates2b.com"
+  },
+  "tabs": [
+    {
+      "name": "API Reference",
+      "url": "api-reference"
+    }
+  ],
+  "anchors": [],
+  "navigation": [
+    {
+      "group": "Comece por aqui",
+      "pages": [
+        "guia/comece-aqui",
+        "guia/autenticacao",
+        "guia/codigo-http-das-resposta",
+        "guia/limites-da-api",
+        "guia/regras-de-negocio",
+        "guia/integracoes",
+        "guia/llm-txt"
+      ]
+    },
+    {
+      "group": "Informações Básicas",
+      "pages": [
+        "api-reference/authentication",
+        "api-reference/limitations-and-restrictions",
+        "api-reference/ip-or-url-releases",
+        "api-reference/webhooks"
+      ]
+    },
+    {
+      "group": "API Key",
+      "pages": [
+        "api-reference/endpoint/api-key-validate"
+      ]
+    },
+    {
+      "group": "PIX",
+      "pages": [
+        "api-reference/endpoint/invoices/payments"
+      ]
+    },
+    {
+      "group": "Cartão de Crédito",
+      "pages": [
+        "api-reference/endpoint/card-payment"
+      ]
+    },
+    {
+      "group": "Crypto",
+      "pages": [
+        "api-reference/endpoint/crypto-payments",
+        "api-reference/endpoint/invoices/payment-gateway-list",
+        "api-reference/endpoint/invoices/payment-gateway-detail"
+      ]
+    },
+    {
+      "group": "Reembolsos",
+      "pages": [
+        "api-reference/endpoint/refund"
+      ]
+    },
+    {
+      "group": "Webhooks",
+      "pages": [
+        "api-reference/endpoint/resend-webhook"
+      ]
+    }
+  ],
+  "footerSocials": {
+    "x": "https://x.com/mintlify",
+    "github": "https://github.com/mintlify",
+    "linkedin": "https://www.linkedin.com/company/mintsearch"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(/C:\\Users\\EzequielMagalhãesMor\\Documents\\docs/**)",
+      "Read(/C:\\Users\\EzequielMagalhãesMor\\Documents\\docs\\api-reference/**)",
+      "Read(/C:\\Users\\EzequielMagalhãesMor\\Documents\\docs\\api-reference/**)",
+      "Read(/C:\\Users\\EzequielMagalhãesMor\\Documents\\docs\\api-reference\\endpoint\\invoices/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

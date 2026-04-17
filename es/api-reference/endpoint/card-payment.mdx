@@ -1,0 +1,313 @@
+---
+title: "Crear Pago con Tarjeta de Credito"
+sidebarTitle: "/payments/v1/card"
+api: "POST https://api.gates2b.com/payments/v1/card"
+authMethod: "authorization"
+description: "Crea un pago con tarjeta de credito con cuotas configurables."
+---
+
+<ParamField
+  header="Authorization"
+  type="string"
+  placeholder="Bearer {token}"
+  required
+>
+  El token de autenticacion en formato Bearer es obligatorio para acceder a este
+  endpoint.
+</ParamField>
+
+<ParamField
+  body="clientMode"
+  type="string"
+  placeholder="noNeedToSpecify | fillDataNow | requestCheckout"
+  required
+>
+  Define el modo de tratamiento de los datos del cliente. - `noNeedToSpecify`:
+  No requiere datos del cliente. - `fillDataNow`: Los datos del cliente deben
+  ser enviados ahora. - `requestCheckout`: Los datos del cliente se completaran
+  via checkout.
+</ParamField>
+
+<ParamField body="amount" type="number" placeholder="3.05" required>
+  Valor del pago.
+</ParamField>
+
+<ParamField
+  body="expire_at"
+  type="string"
+  placeholder="2025-12-30T03:00:00.000Z"
+  required
+>
+  Fecha y hora de expiracion en formato ISO 8601.
+</ParamField>
+
+<ParamField body="installments" type="number" placeholder="12" required>
+  Numero de cuotas del pago (1 a 24).
+</ParamField>
+
+### Response
+
+<ResponseField name="id" type="number">
+  ID unico de la transaccion creada.
+</ResponseField>
+
+<ResponseField name="amount" type="number">
+  Valor del pago.
+</ResponseField>
+
+<ResponseField name="description" type="string">
+  Descripcion del pago.
+</ResponseField>
+
+<ResponseField name="clientMode" type="string">
+  Modo de tratamiento de datos del cliente.
+</ResponseField>
+
+<ResponseField name="redirect_url" type="string">
+  URL de redireccion despues del pago.
+</ResponseField>
+
+<ResponseField name="email" type="string">
+  Correo del cliente.
+</ResponseField>
+
+<ResponseField name="phoneNumber" type="string">
+  Numero de telefono del cliente.
+</ResponseField>
+
+<ResponseField name="document_type" type="string">
+  Tipo de documento del cliente.
+</ResponseField>
+
+<ResponseField name="expire_at" type="string">
+  Fecha y hora de expiracion de la transaccion.
+</ResponseField>
+
+<ResponseField name="document_client" type="string">
+  Documento del cliente.
+</ResponseField>
+
+<ResponseField name="document_type_client" type="string">
+  Tipo de documento del cliente.
+</ResponseField>
+
+<ResponseField name="name_client" type="string">
+  Nombre del cliente.
+</ResponseField>
+
+<ResponseField name="id_transaction" type="string">
+  ID de la transaccion (UUID).
+</ResponseField>
+
+<ResponseField name="emv" type="string">
+  Datos EMV de la tarjeta (cuando aplica).
+</ResponseField>
+
+<ResponseField name="name_receiver" type="string">
+  Nombre del receptor.
+</ResponseField>
+
+<ResponseField name="international_status" type="string">
+  Estado internacional de la transaccion. Valores posibles: - `WAITING_PAYMENT`:
+  Esperando pago - `PAID`: Pagado - `DENIED`: Rechazado - `CANCELED`: Cancelado
+  - `REFUNDED`: Reembolsado
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Estado de la transaccion en portugues.
+</ResponseField>
+
+<ResponseField name="checkout_id" type="number">
+  ID del checkout generado.
+</ResponseField>
+
+<ResponseField name="checkout_url" type="string">
+  URL del checkout donde el cliente puede completar los datos de la tarjeta.
+</ResponseField>
+
+<ResponseField name="createdAt" type="string">
+  Fecha y hora de creacion de la transaccion (formato ISO 8601).
+</ResponseField>
+
+<ResponseField name="updatedAt" type="string">
+  Fecha y hora de la ultima actualizacion (formato ISO 8601).
+</ResponseField>
+
+<ResponseField name="installments" type="number">
+  Numero de cuotas configuradas.
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl -X POST "https://api.gates2b.com/payments/v1/card" \
+  -H "Authorization: Bearer {seu-token}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "clientMode": "noNeedToSpecify",
+    "amount": 3.05,
+    "expire_at": "2025-12-30T03:00:00.000Z",
+    "installments": 12
+  }'
+```
+
+```javascript
+const response = await fetch("https://api.gates2b.com/payments/v1/card", {
+  method: "POST",
+  headers: {
+    Authorization: "Bearer {seu-token}",
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    data: {
+      clientMode: "noNeedToSpecify",
+      amount: 3.05,
+      expire_at: "2025-12-30T03:00:00.000Z",
+      type: "VENDA",
+      installments: 12,
+    },
+    body: JSON.stringify({
+      clientMode: "noNeedToSpecify",
+      amount: 3.05,
+      expire_at: "2025-12-30T03:00:00.000Z",
+      installments: 12,
+    }),
+  }
+);
+
+const data = await response.json();
+```
+
+```python
+import requests
+
+url = "https://api.gates2b.com/payments/v1/card"
+headers = {
+    "Authorization": "Bearer {seu-token}",
+    "Content-Type": "application/json"
+}
+payload = {
+    "clientMode": "noNeedToSpecify",
+    "amount": 3.05,
+    "expire_at": "2025-12-30T03:00:00.000Z",
+    "installments": 12
+}
+
+response = requests.post(url, headers=headers, json=payload)
+data = response.json()
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Exito
+{
+  "id": 3577,
+  "amount": 3.05,
+  "description": null,
+  "clientMode": "noNeedToSpecify",
+  "redirect_url": null,
+  "email": null,
+  "phoneNumber": null,
+  "document_type": null,
+  "expire_at": "2025-12-30T03:00:00.000Z",
+  "document_client": null,
+  "document_type_client": null,
+  "name_client": null,
+  "id_transaction": "7ddc71cb-66a8-4c48-b509-706b2db0e37a",
+  "emv": null,
+  "name_receiver": "Clever Meireles Lopes Junior",
+  "international_status": "WAITING_PAYMENT",
+  "status": "Aguardando pagamento",
+  "checkout_id": 1,
+  "checkout_url": "https://pay.gates2b.com/7ddc71cb-66a8-4c48-b509-706b2db0e37a",
+  "createdAt": "2025-12-10T19:53:09.078Z",
+  "updatedAt": "2025-12-10T19:53:09.078Z",
+  "installments": 12
+}
+```
+
+```json Error - Datos invalidos
+{
+  "error": "Bad Request",
+  "message": "Dados inválidos no payload",
+  "statusCode": 400
+}
+```
+
+```json Error - No autorizado
+{
+  "error": "Unauthorized",
+  "message": "Token de autenticação ausente ou inválido",
+  "statusCode": 401
+}
+```
+
+```json Error - Servidor
+{
+  "error": "Internal Server Error",
+  "message": "Erro ao criar pagamento",
+  "statusCode": 500
+}
+```
+
+</ResponseExample>
+
+## Observaciones Importantes
+
+### Estado de la Transaccion
+
+Tras la creacion, la transaccion queda con estado `WAITING_PAYMENT` (Esperando pago). Los posibles estados son:
+
+- **WAITING_PAYMENT**: Esperando pago
+- **PAID**: Pago aprobado y procesado
+- **DENIED**: Pago rechazado
+- **CANCELED**: Transaccion cancelada
+- **REFUNDED**: Pago reembolsado
+
+### URL de Checkout
+
+La `checkout_url` devuelta puede usarse para dirigir al cliente a una pagina de checkout alojada, donde puede completar los datos de la tarjeta de forma segura.
+
+### Cuotas
+
+- **Cuotas disponibles**: 1 a 24 cuotas
+- **Monto minimo**: Consulta la configuracion especifica de tu cuenta
+- **Tarifas**: Calculadas automaticamente segun la configuracion y numero de cuotas
+
+### Client Mode
+
+El campo `clientMode` define como se trataran los datos del cliente:
+
+- **noNeedToSpecify**: No requiere datos del cliente al crear
+- **fillDataNow**: Los datos del cliente deben enviarse en el payload
+- **requestCheckout**: Los datos del cliente se completaran via checkout
+
+### Expiracion
+
+La fecha de expiracion (`expire_at`) debe enviarse en formato ISO 8601. Despues de la expiracion, la transaccion ya no puede pagarse.
+
+### Codigos de Estado HTTP
+
+- **201**: Pago creado con exito
+- **400**: Datos invalidos en el payload
+- **401**: Token de autenticacion ausente o invalido
+- **500**: Error interno al crear el pago
+
+### Validaciones
+
+1. **Monto**: Debe ser mayor que 0
+2. **Cuotas**: Debe estar entre 1 y 24
+3. **Fecha de expiracion**: Debe ser una fecha futura
+
+### Buenas Practicas
+
+<Tip>
+  1. **Guarda el ID de Transaccion**: Guarda el `id_transaction` en tu base de
+  datos junto con el pedido 2. **Checkout URL**: Usa `checkout_url` para
+  redirigir al cliente al checkout seguro 3. **Webhook**: Configura webhooks
+  para recibir notificaciones de cambios de estado 4. **Expiracion**: Define un
+  tiempo de expiracion adecuado (ej: 30 minutos, 24 horas) 5. **Cuotas**:
+  Considera el impacto de las tarifas al definir el numero de cuotas
+</Tip>

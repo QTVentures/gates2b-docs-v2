@@ -1,0 +1,153 @@
+---
+title: "Generar Venta"
+sidebarTitle: "/invoices/sale"
+api: "POST https://api.gates2b.com/invoices/sale"
+authMethod: "authorization"
+description: "Este endpoint genera una venta."
+---
+
+<ParamField
+  header="Authorization"
+  type="string"
+  placeholder="Bearer {token}"
+  required
+>
+  El token de autenticacion en formato Bearer es obligatorio para acceder a este
+  endpoint.
+</ParamField>
+
+<ParamField body="amount" type="number" placeholder="1.1" required>
+  El monto de la venta a generar.
+</ParamField>
+
+<ParamField
+  body="external_reference"
+  type="string"
+  placeholder="Referência externa"
+>
+  Usalo para guardar una referencia externa a la aplicacion de gates2b, como un
+  ID. Campo opcional.
+</ParamField>
+<ParamField body="description" type="string" placeholder="Descrição da venda">
+  Descripcion de la venta. Campo opcional.
+</ParamField>
+
+<ParamField body="name_client" type="string" placeholder="Nome do pagador">
+  Nombre del pagador. Campo opcional.
+</ParamField>
+
+<ParamField
+  body="document_client"
+  type="string"
+  placeholder="CPF ou CNPJ do pagador"
+>
+  Documento del pagador (CPF o CNPJ). Campo opcional.
+</ParamField>
+
+### Response
+
+<ResponseField name="status" type="number">
+  Indica el codigo HTTP de la respuesta. Esperado: 201 (Created).
+</ResponseField>
+
+<ResponseField name="code" type="string">
+  El codigo de estado de la respuesta.
+</ResponseField>
+<ResponseField name="response" type="object">
+
+Contenido de la respuesta.
+
+<Expandable title="Mostrar objeto">
+<ResponseField name="venda" type="object">
+  <Expandable title="Mostrar objeto">
+  <ResponseField name="id" type="number">
+    Identificador unico de la venta.
+  </ResponseField>
+  <ResponseField name="type" type="string">
+    Tipo de transaccion (ej.: VENTA).
+  </ResponseField>
+  <ResponseField name="amount" type="number">
+    Monto de la transaccion.
+  </ResponseField>
+  <ResponseField name="amount_final" type="number">
+    Monto final de la transaccion despues de aplicar tarifas.
+  </ResponseField>
+  <ResponseField name="status" type="string">
+    Estado de la transaccion (ej.: Esperando pago).
+  </ResponseField>
+  <ResponseField name="description" type="string">
+    Descripcion de la venta.
+  </ResponseField>
+  <ResponseField name="name_client" type="string">
+    Nombre del pagador.
+  </ResponseField>
+  <ResponseField name="document_client" type="string">
+    Documento del pagador.
+  </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="pix" type="object">
+  <Expandable title="Mostrar objeto">
+    <ResponseField name="transaction_pix_id" type="string">
+      Identificador unico de la transaccion Pix.
+    </ResponseField>
+    <ResponseField name="qr_text" type="string">
+      Codigo QR para pago Pix.
+    </ResponseField>
+    <ResponseField name="qr_image" type="string">
+      Imagen QR en base64 para pago Pix.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="fees" type="object">
+  <Expandable title="Mostrar objeto">
+    <ResponseField name="percent_sales" type="number">
+      Porcentaje aplicado en las ventas.
+    </ResponseField>
+    <ResponseField name="amount_per_withdraw" type="number">
+      Tarifa aplicada por retiro.
+    </ResponseField>
+    <ResponseField name="salesFeePercent" type="number">
+      Porcentaje de tarifa sobre ventas.
+    </ResponseField>
+    <ResponseField name="freeWithdrawalsPerMonth" type="number">
+      Cantidad de retiros gratuitos por mes.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="deadline" type="string">
+  Fecha limite para el pago.
+</ResponseField>
+
+</Expandable>
+</ResponseField>
+
+<ResponseExample>
+```json
+{
+  "id": 2894,
+  "type": "VENDA",
+  "amount": 1.1,
+  "amount_final": 1.1,
+  "description": "Compra de produto X",
+  "client_name": "João da Silva",
+  "document_client": "12345678900",
+  "id_transaction": "af2d1e3a-d9c2-4fc4-ac85-a47dbb8a49dd",
+  "transaction_pix_id": "NOX152OM61MC0REP3F7HMQYI7U14QU85",
+  "balance_pending": 1.1,
+  "status": "Aguardando pagamento",
+  "qr_image": "iVBORw0KGgoAAAANSUhEUgAAAQAAAAEAAQMAAABmvDolAAAABlBMVEX///8AAABVwtN+...",
+  "qr_text": "00020101021226840014br.gov.bcb.pix2562qr.iugu.com...",
+  "fees": {
+    "percent_sales": 0,
+    "amount_per_withdraw": 0,
+    "salesFeePercent": 0,
+    "freeWithdrawalsPerMonth": 0
+  },
+  "deadline": "2024-12-17T12:33:31.351Z"
+}
+```
+</ResponseExample>

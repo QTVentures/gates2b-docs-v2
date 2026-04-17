@@ -1,0 +1,32 @@
+---
+title: "Autenticacion"
+description: "Aprende como autenticarte en nuestra API."
+---
+
+## Como se realiza la autenticacion en la API de Gates2b?
+
+La autenticacion en nuestra API se realiza mediante el uso de una API Key. A traves de esta clave, nuestro sistema identifica tu cuenta y permite la comunicacion con nosotros en nombre de esa cuenta.
+
+Si la API key es invalida, no se informa o el header es incorrecto, nuestra API retornara `HTTP 401`.
+
+### Usa los headers abajo en todas tus llamadas a la API:
+
+```json
+"Content-Type": "application/json",
+"Authorization": "Bearer sua_api_key"
+```
+
+### Consejos importantes:
+
+<Warning>
+  Despues de generar la API key en nuestra interfaz, guardala directamente en tu
+  almacen de claves, evitando que se exponga en mensajes de cualquier tipo o
+  correos. Nunca dejes la API key directamente en el codigo fuente de tus
+  sistemas.
+</Warning>
+
+<Warning>
+  No compartas tu API key en solicitudes de soporte, con terceros o la expongas
+  en el front-end de tu aplicacion. Asegura que tu aplicacion no exponga la
+  clave en logs del sistema.
+</Warning>

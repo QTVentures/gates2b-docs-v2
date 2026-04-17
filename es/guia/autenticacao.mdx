@@ -1,0 +1,86 @@
+---
+title: "Autenticacion"
+description: "Aprende como autenticarte en nuestra API."
+---
+
+## Como se realiza la autenticacion en la API de Gates2b?
+
+La autenticacion en nuestra API se realiza mediante el uso de una API Key. A traves de esta clave, nuestro sistema identifica tu cuenta y permite la comunicacion con nosotros en nombre de esa cuenta.
+
+Si la API key es invalida, no se informa o el header es incorrecto, nuestra API retornara `HTTP 401`.
+
+## Que es una API Key?
+
+La **API Key** es una credencial unica y secreta que identifica tu cuenta al realizar solicitudes a la API de Gates2b. Funciona como una "contrasena" que permite que tu sistema se comunique de forma segura con nuestra plataforma.
+
+### Por que necesito una API Key?
+
+- **Autenticacion**: Garantiza que solo tu tengas acceso a los recursos de tu cuenta
+- **Seguridad**: Protege tus transacciones y datos
+- **Identificacion**: Permite que nuestro sistema identifique tus solicitudes
+
+## Tutorial en Video
+
+Mira el video abajo para aprender como generar tu API Key:
+
+<video
+  controls
+  className="w-full aspect-video"
+  src="https://res.cloudinary.com/dxde8qjio/video/upload/v1768997137/tutorial_gkgqrf.mp4"
+></video>
+
+## Como generar tu API Key
+
+<Steps>
+  <Step title="Accede al Panel">
+    Ingresa al [panel de control de Gates2b](https://painel.gates2b.com) con tus
+    credenciales.
+  </Step>
+  <Step title="Navega a Integracion">
+    En el menu lateral, haz clic en la pestaña **Integracion**.
+  </Step>
+  <Step title="Genera tu API Key">
+    Haz clic en el boton para generar una nueva API key y copiala
+    inmediatamente.
+  </Step>
+  <Step title="Guarda de forma segura">
+    Guarda tu API Key en un lugar seguro. Solo se mostrara una vez.
+  </Step>
+</Steps>
+
+### Usa los headers abajo en todas tus llamadas a la API:
+
+```json
+"Content-Type": "application/json",
+"Authorization": "Bearer sua_api_key"
+```
+
+### Consejos importantes:
+
+<Warning>
+  Despues de generar la API key en nuestra interfaz, guardala directamente en tu
+  almacen de claves, evitando que se exponga en mensajes de cualquier tipo o
+  correos. Nunca dejes la API key directamente en el codigo fuente de tus
+  sistemas.
+</Warning>
+
+<Warning>
+  No compartas tu API key en solicitudes de soporte, con terceros o la expongas
+  en el front-end de tu aplicacion. Asegura que tu aplicacion no exponga la
+  clave en logs del sistema.
+</Warning>
+
+<Tip>
+  Si sospechas que tu API Key fue comprometida, genera una nueva inmediatamente
+  en el panel de control.
+</Tip>
+
+## Proximos Pasos
+
+<Card
+  title="Primera Solicitud"
+  icon="rocket"
+  href="/es/api-reference/endpoint/api-key-validate"
+>
+  Valida tu API Key con una llamada de prueba
+</Card>

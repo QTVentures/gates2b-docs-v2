@@ -1,0 +1,161 @@
+---
+title: "¿Cómo conectar Gates2b con su sistema?"
+description: "Guía completa para integrar Gates2b con su sistema, sitio web o tienda virtual."
+---
+
+El área de **Integraciones** fue creada para conectar Gates2b a su sistema, sitio web o tienda virtual. En esta pantalla, puede:
+
+- Generar o restablecer su clave de API
+- Registrar IPs y dominios permitidos
+- Agregar webhooks para recibir notificaciones automáticas
+
+---
+
+## ¿Cómo generar una nueva Clave de API?
+
+En el menú lateral, haga clic en **"Mi Cuenta"** y luego en **"Integraciones"**.
+
+En la sección **"Generar clave de API"**, haga clic en **"Generar nueva clave API"**.
+Para completar esta acción, es necesario que la verificación en dos pasos esté activa en la cuenta.
+
+Después de la generación, copie la clave mostrada de inmediato.
+
+<Warning>
+  La clave se mostrará solo una vez. Además, al generar una nueva clave, la clave anterior será invalidada permanentemente, y todas las integraciones que estén utilizando la clave antigua dejarán de funcionar.
+
+  Por eso, almacene la nueva clave en un lugar seguro y actualice sus integraciones tan pronto como se realice el cambio.
+</Warning>
+
+<Frame caption="Generando una nueva clave de API">
+  <img src="/images/gerar-chave-api.png" alt="Generar clave de API" />
+</Frame>
+
+### Al generar una nueva clave
+
+Puede restablecer la clave de API cuando:
+
+- Esté iniciando una nueva integración
+- Sospeche de una filtración de credenciales
+- Cambie de sistema o socio tecnológico
+- Quiera invalidar la clave anterior por seguridad
+
+### Buenas prácticas
+
+- Mantenga la clave solo en el backend de su sistema
+- No exponga la clave en páginas públicas ni en el front-end
+- Limite el acceso solo a quienes realmente lo necesitan
+
+---
+
+## Registro de IPs y dominios permitidos
+
+La sección **IPs y Dominios permitidos** funciona como una capa adicional de seguridad.
+Aquí, usted informa qué orígenes están autorizados a utilizar la API.
+
+Registre los IPs o dominios de los sistemas que se comunicarán con Gates2b. Esto es especialmente importante cuando su operación depende de llamadas autenticadas a la API.
+
+Este registro ayuda a restringir el uso de la API solo a los entornos de confianza de su negocio, como:
+
+- El servidor de su sistema
+- El dominio de su sitio web
+- El entorno de su checkout
+- La infraestructura de su aplicación
+
+### ¿Cómo registrar un IP o dominio?
+
+1. Aún en la pestaña de **Integraciones**
+2. Vaya al bloque **IPs y Dominios permitidos**
+3. Haga clic en **"Agregar un nuevo IP o Dominio"**
+4. Ingrese el IP o dominio deseado
+5. Guarde el registro
+
+<Frame caption="Registrando IPs y dominios permitidos">
+  <img src="/images/cadastrar-ip-dominio.png" alt="Registrar IP o dominio" />
+</Frame>
+
+<Info>
+  **Recomendación:** Antes de guardar, confirme con su equipo técnico:
+  - Cuál es la IP pública del servidor
+  - Qué dominio realizará las solicitudes
+  - Si existen entornos de homologación y producción separados
+</Info>
+
+---
+
+## Configuración de webhooks
+
+Los webhooks permiten que Gates2b envíe notificaciones automáticas a su sistema cada vez que ocurra un evento relacionado con las transacciones. En lugar de consultar la plataforma manualmente todo el tiempo, su sistema recibe las actualizaciones en tiempo real en la URL configurada.
+
+Con webhooks, su sistema puede ser notificado cuando haya cambios como:
+
+- Creación de cobro
+- Actualización de estado
+- Confirmación de pago
+- Falla o cancelación
+- Otros eventos de la API disponibles en la plataforma
+
+### ¿Cómo registrar un webhook?
+
+1. Aún en la pestaña de **Integraciones**
+2. Localice la sección **Webhooks**
+3. Haga clic en **Agregar URL**
+4. Ingrese la URL que recibirá las notificaciones
+5. Guarde la configuración
+
+Una vez registrado, el webhook aparecerá listado en la pantalla.
+
+<Frame caption="Registrando webhook">
+  <img src="/images/cadastrar-webhook.png" alt="Registrar webhook" />
+</Frame>
+
+### Requisitos para la URL
+
+- Aceptar solicitudes de Gates2b
+- Estar accesible públicamente por internet
+- Responder correctamente al recibir el evento
+- Registrar los datos recibidos para auditoría y soporte
+
+### Buenas prácticas
+
+- Use una URL HTTPS
+- Mantenga el endpoint estable
+- Registre logs de entrada en su sistema
+- Valide los datos recibidos antes de procesar acciones
+- Implemente reintentos internos en caso de falla en su procesamiento
+
+---
+
+## Consulta de Logs de Webhook
+
+El área de **Logs de Webhook** permite monitorear el historial de notificaciones enviadas por Gates2b.
+
+### ¿Cómo acceder?
+
+En el menú lateral, haga clic en **"Mi Cuenta"** y luego en **"Logs de Webhook"**.
+
+<Frame caption="Logs de Webhook">
+  <img src="/images/logs-webhook.png" alt="Logs de Webhook" />
+</Frame>
+
+En el listado, es posible visualizar información como:
+
+- Estado del envío
+- ID único
+- ID de la Venta que recibió el intento
+- Opción para ver el contenido
+- Fecha y hora
+- Botón para reenviar un webhook
+
+Esta pantalla es útil para verificar si el webhook fue enviado con éxito, identificar fallas de comunicación, revisar qué cobro generó el evento, analizar el contenido enviado y reenviar notificaciones cuando sea necesario.
+
+---
+
+## Ejemplo de uso
+
+1. El sistema de su tienda usa la clave de API para crear cobros
+2. El dominio o IP de la tienda está previamente autorizado
+3. Cuando el pago se actualiza, Gates2b envía un webhook
+4. La tienda recibe este evento y actualiza automáticamente el estado del pedido
+5. En caso de falla, el comerciante consulta los **Logs de Webhook** y puede reenviar la notificación
+
+Esto reduce los procesos manuales y hace que la operación sea más rápida y confiable.
