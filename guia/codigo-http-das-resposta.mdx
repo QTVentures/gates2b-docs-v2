@@ -1,0 +1,31 @@
+---
+title: "Códigos HTTP das respostas"
+description: "Nossa API utiliza respostas HTTP convencionais para indicar sucesso ou falha nas requisições. Respostas com status 200 indicam sucesso, status 4xx indicam falhas decorrentes de erros nas informações enviadas, e status 500 indicam erros internos em nosso servidor."
+---
+
+<Info>
+  **Atente-se** Todos os endpoints da API recebem e respondem em JSON.
+</Info>
+
+```json
+{
+    "errors":[
+        {
+            "code":"invalid_amount",
+            "description":"O campo amount deve ser informado"
+        },
+    ]
+}
+}
+```
+
+| Código HTTP                        | Descrição                                                                                                                                                        |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 200 OK                             | Sua requisição foi bem sucedida\.                                                                                                                                |
+| 400 Bad Request                    | Algum parâmetro obrigatório não foi enviado ou é inválido\. Neste caso a própria resposta indicará qual é o problema\.                                           |
+| 401 Unauthorized                   | Não foi enviada Bearer Token ou ela é inválida\.                                                                                                                 |
+| 403 Forbidden                      | Requisição não autorizada\. Abuso da API ou uso de parâmetros não permitidos podem gerar este código\.                                                           |
+| 403 Forbidden / Cloudfront \(GET\) | Erros 403 em chamadas GET indicam que você está enviando um body junto da requisição\. Você não deve enviar nenhuma informação no body em chamadas do tipo GET\. |
+| 404 Not Found                      | O endpoint ou o objeto solicitado não existe\.                                                                                                                   |
+| 429 Too Many Requests              | Muitos pedidos em um determinado período de tempo\. Mais em nossa seção sobre Rate Limiting\.                                                                    |
+| 500 Internal Server Error          | Algo deu errado no servidor da gates2b\.                                                                                                                         |

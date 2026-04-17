@@ -1,122 +1,288 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Mint Starter Kit",
+  "name": "Documentação Gates2b",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#1a56db",
+    "light": "#1a56db",
+    "dark": "#1a56db"
   },
-  "favicon": "/favicon.svg",
-  "navigation": {
-    "tabs": [
+  "logo": {
+    "dark": "assets/logos/BPIXWhite.svg",
+    "light": "assets/logos/BPIX.svg"
+  },
+  "favicon": "assets/favicon.svg",
+  "api": {
+    "auth": {
+      "method": "key",
+      "name": "Authorization"
+    },
+    "playground": {
+      "mode": "show"
+    }
+  },
+  "navbar": {
+    "links": [
       {
-        "tab": "Guides",
-        "groups": [
+        "label": "Suporte",
+        "href": "https://t.me/Gates2b"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Painel",
+      "href": "https://painel.gates2b.com"
+    }
+  },
+  "navigation": {
+    "languages": [
+      {
+        "language": "pt-BR",
+        "tabs": [
           {
-            "group": "Getting started",
-            "pages": [
-              "index",
-              "quickstart",
-              "development"
+            "tab": "Documentação",
+            "groups": [
+              {
+                "group": "Comece por aqui",
+                "pages": [
+                  "guia/comece-aqui",
+                  "guia/autenticacao",
+                  "guia/codigo-http-das-resposta",
+                  "guia/limites-da-api",
+                  "guia/regras-de-negocio",
+                  "guia/integracoes"
+                ]
+              }
             ]
           },
           {
-            "group": "Customization",
-            "pages": [
-              "essentials/settings",
-              "essentials/navigation"
-            ]
-          },
-          {
-            "group": "Writing content",
-            "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
-            ]
-          },
-          {
-            "group": "AI tools",
-            "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
+            "tab": "API Reference",
+            "groups": [
+              {
+                "group": "Informações Básicas",
+                "pages": [
+                  "api-reference/authentication",
+                  "api-reference/limitations-and-restrictions",
+                  "api-reference/ip-or-url-releases",
+                  "api-reference/webhooks"
+                ]
+              },
+              {
+                "group": "API Key",
+                "pages": [
+                  "api-reference/endpoint/api-key-validate"
+                ]
+              },
+              {
+                "group": "Cobrança",
+                "pages": [
+                  "api-reference/endpoint/charge/create-charge",
+                  "api-reference/endpoint/charge/get-charge"
+                ]
+              },
+              {
+                "group": "PIX",
+                "pages": [
+                  "api-reference/endpoint/invoices/payments"
+                ]
+              },
+              {
+                "group": "Cartão de Crédito",
+                "pages": [
+                  "api-reference/endpoint/card-payment"
+                ]
+              },
+              {
+                "group": "Crypto",
+                "pages": [
+                  "api-reference/endpoint/crypto-payments",
+                  "api-reference/endpoint/invoices/payment-gateway-list",
+                  "api-reference/endpoint/invoices/payment-gateway-detail"
+                ]
+              },
+              {
+                "group": "Reembolsos",
+                "pages": [
+                  "api-reference/endpoint/refund"
+                ]
+              },
+              {
+                "group": "Webhooks",
+                "pages": [
+                  "api-reference/endpoint/resend-webhook"
+                ]
+              }
             ]
           }
         ]
       },
       {
-        "tab": "API reference",
-        "groups": [
+        "language": "en",
+        "tabs": [
           {
-            "group": "API documentation",
-            "pages": [
-              "api-reference/introduction"
+            "tab": "Documentation",
+            "groups": [
+              {
+                "group": "Get Started",
+                "pages": [
+                  "en/guia/comece-aqui",
+                  "en/guia/autenticacao",
+                  "en/guia/codigo-http-das-resposta",
+                  "en/guia/limites-da-api",
+                  "en/guia/regras-de-negocio",
+                  "en/guia/integracoes"
+                ]
+              }
             ]
           },
           {
-            "group": "Endpoint examples",
-            "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+            "tab": "API Reference",
+            "groups": [
+              {
+                "group": "Basic Information",
+                "pages": [
+                  "en/api-reference/authentication",
+                  "en/api-reference/limitations-and-restrictions",
+                  "en/api-reference/ip-or-url-releases",
+                  "en/api-reference/webhooks"
+                ]
+              },
+              {
+                "group": "API Key",
+                "pages": [
+                  "en/api-reference/endpoint/api-key-validate"
+                ]
+              },
+              {
+                "group": "Charges",
+                "pages": [
+                  "en/api-reference/endpoint/charge/create-charge",
+                  "en/api-reference/endpoint/charge/get-charge"
+                ]
+              },
+              {
+                "group": "PIX",
+                "pages": [
+                  "en/api-reference/endpoint/invoices/payments"
+                ]
+              },
+              {
+                "group": "Credit Card",
+                "pages": [
+                  "en/api-reference/endpoint/card-payment"
+                ]
+              },
+              {
+                "group": "Crypto",
+                "pages": [
+                  "en/api-reference/endpoint/crypto-payments",
+                  "en/api-reference/endpoint/invoices/payment-gateway-list",
+                  "en/api-reference/endpoint/invoices/payment-gateway-detail"
+                ]
+              },
+              {
+                "group": "Refunds",
+                "pages": [
+                  "en/api-reference/endpoint/refund"
+                ]
+              },
+              {
+                "group": "Webhooks",
+                "pages": [
+                  "en/api-reference/endpoint/resend-webhook"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "language": "es",
+        "tabs": [
+          {
+            "tab": "Documentación",
+            "groups": [
+              {
+                "group": "Empiece aquí",
+                "pages": [
+                  "es/guia/comece-aqui",
+                  "es/guia/autenticacao",
+                  "es/guia/codigo-http-das-resposta",
+                  "es/guia/limites-da-api",
+                  "es/guia/regras-de-negocio",
+                  "es/guia/integracoes"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "API Reference",
+            "groups": [
+              {
+                "group": "Información Básica",
+                "pages": [
+                  "es/api-reference/authentication",
+                  "es/api-reference/limitations-and-restrictions",
+                  "es/api-reference/ip-or-url-releases",
+                  "es/api-reference/webhooks"
+                ]
+              },
+              {
+                "group": "API Key",
+                "pages": [
+                  "es/api-reference/endpoint/api-key-validate"
+                ]
+              },
+              {
+                "group": "Cobros",
+                "pages": [
+                  "es/api-reference/endpoint/charge/create-charge",
+                  "es/api-reference/endpoint/charge/get-charge"
+                ]
+              },
+              {
+                "group": "PIX",
+                "pages": [
+                  "es/api-reference/endpoint/invoices/payments"
+                ]
+              },
+              {
+                "group": "Tarjeta de Crédito",
+                "pages": [
+                  "es/api-reference/endpoint/card-payment"
+                ]
+              },
+              {
+                "group": "Crypto",
+                "pages": [
+                  "es/api-reference/endpoint/crypto-payments",
+                  "es/api-reference/endpoint/invoices/payment-gateway-list",
+                  "es/api-reference/endpoint/invoices/payment-gateway-detail"
+                ]
+              },
+              {
+                "group": "Reembolsos",
+                "pages": [
+                  "es/api-reference/endpoint/refund"
+                ]
+              },
+              {
+                "group": "Webhooks",
+                "pages": [
+                  "es/api-reference/endpoint/resend-webhook"
+                ]
+              }
             ]
           }
         ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
-      ]
-    }
-  },
-  "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
-  },
-  "navbar": {
-    "links": [
-      {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
-      }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
-    }
-  },
-  "contextual": {
-    "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
+    ]
   },
   "footer": {
     "socials": {
       "x": "https://x.com/mintlify",
       "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
+      "linkedin": "https://www.linkedin.com/company/mintsearch"
     }
   }
 }

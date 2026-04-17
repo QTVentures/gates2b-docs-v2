@@ -1,0 +1,142 @@
+---
+title: "Resend Webhook"
+sidebarTitle: "/invoices/resend-webhook/:id"
+api: "POST https://api.gates2b.com/invoices/resend-webhook/:id"
+authMethod: "authorization"
+description: "Resends the webhook for a specific invoice. Useful when the webhook was not received or delivery failed."
+---
+
+<ParamField
+  header="Authorization"
+  type="string"
+  placeholder="Bearer {token}"
+  required
+>
+  The Bearer authentication token is required to access this endpoint.
+</ParamField>
+
+<ParamField path="id" type="string" placeholder="123" required>
+  Invoice (sale) ID for which the webhook will be resent.
+</ParamField>
+
+### Response
+
+<ResponseField name="message" type="string">
+  Confirmation message for the webhook resend.
+</ResponseField>
+
+<ResponseField name="invoice_id" type="number">
+  Invoice ID for which the webhook was resent.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Resend status. Possible values: - `success`: Webhook resent successfully -
+  `pending`: Resend in progress
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl -X POST "https://api.gates2b.com/invoices/resend-webhook/123" \
+  -H "Authorization: Bearer {seu-token}" \
+  -H "Content-Type: application/json"
+```
+
+```javascript
+const response = await fetch(
+  "https://api.gates2b.com/invoices/resend-webhook/123",
+  {
+    method: "POST",
+    headers: {
+      Authorization: "Bearer {seu-token}",
+      "Content-Type": "application/json",
+    },
+  },
+);
+
+const data = await response.json();
+```
+
+```python
+import requests
+
+url = "https://api.gates2b.com/invoices/resend-webhook/123"
+headers = {
+    "Authorization": "Bearer {seu-token}",
+    "Content-Type": "application/json"
+}
+
+response = requests.post(url, headers=headers)
+data = response.json()
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Success
+{
+  "message": "Webhook reenviado com sucesso",
+  "invoice_id": 123,
+  "status": "success"
+}
+```
+
+```json Error - Invoice not found
+{
+  "error": "Not Found",
+  "message": "Invoice não encontrada",
+  "statusCode": 404
+}
+```
+
+```json Error - Unauthorized
+{
+  "error": "Unauthorized",
+  "message": "Token de autenticação ausente ou inválido",
+  "statusCode": 401
+}
+```
+
+```json Error - Server
+{
+  "error": "Internal Server Error",
+  "message": "Erro ao reenviar webhook",
+  "statusCode": 500
+}
+```
+
+</ResponseExample>
+
+## Important Notes
+
+### When should you use this endpoint?
+
+This endpoint is useful when:
+
+- The webhook was not received at the configured URL
+- Webhook delivery failed (HTTP error other than 2xx)
+- You need to reprocess a notification manually
+- The automatic retry system failed to deliver the webhook
+
+### Retry Policy
+
+The system attempts to resend webhooks automatically up to 3 times on failure. Use this endpoint when you need an additional manual resend.
+
+### HTTP Status Codes
+
+- **200**: Webhook resent successfully
+- **401**: Missing or invalid authentication token
+- **404**: Invoice not found
+- **500**: Internal error while resending webhook
+
+### Best Practices
+
+<Tip>
+  1. **Verify the Webhook URL**: Before resending, confirm the URL is correctly
+  configured in the dashboard 2. **Wait for Automatic Retry**: The system
+  attempts automatic resends, wait a few minutes before using this endpoint 3.
+  **Logs**: Keep logs of received webhooks to simplify debugging 4.
+  **Idempotency**: This endpoint can be called multiple times without side
+  effects
+</Tip>

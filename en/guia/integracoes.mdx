@@ -1,0 +1,161 @@
+---
+title: "How to connect Gates2b with your system?"
+description: "Complete guide to integrate Gates2b with your system, website, or online store."
+---
+
+The **Integrations** area was created to connect Gates2b to your system, website, or online store. On this screen, you can:
+
+- Generate or reset your API key
+- Register allowed IPs and domains
+- Add webhooks to receive automatic notifications
+
+---
+
+## How to generate a new API Key?
+
+In the side menu, click on **"My Account"** and then click on **"Integrations"**.
+
+In the **"Generate API key"** section, click **"Generate new API key"**.
+To complete this action, two-step verification must be active on the account.
+
+After generation, copy the displayed key immediately.
+
+<Warning>
+  The key will be shown only once. Also, when generating a new key, the previous key will be permanently invalidated, and all integrations using the old key will stop working.
+
+  Therefore, store the new key in a safe place and update your integrations as soon as the change is made.
+</Warning>
+
+<Frame caption="Generating a new API key">
+  <img src="/images/gerar-chave-api.png" alt="Generate API key" />
+</Frame>
+
+### When generating a new key
+
+You can reset the API key when:
+
+- Starting a new integration
+- Suspecting a credential leak
+- Switching systems or technology partners
+- Wanting to invalidate the previous key for security
+
+### Best practices
+
+- Keep the key only in your system's backend
+- Do not expose the key on public pages or the front-end
+- Limit access only to those who truly need it
+
+---
+
+## Registering allowed IPs and domains
+
+The **Allowed IPs and Domains** section works as an additional security layer.
+Here, you inform which origins are authorized to use the API.
+
+Register the IPs or domains of the systems that will communicate with Gates2b. This is especially important when your operation depends on authenticated API calls.
+
+This registration helps restrict API usage only to your business's trusted environments, such as:
+
+- Your system's server
+- Your website's domain
+- Your checkout environment
+- Your application's infrastructure
+
+### How to register an IP or domain?
+
+1. Still on the **Integrations** tab
+2. Go to the **Allowed IPs and Domains** block
+3. Click **"Add a new IP or Domain"**
+4. Enter the desired IP or domain
+5. Save the registration
+
+<Frame caption="Registering allowed IPs and domains">
+  <img src="/images/cadastrar-ip-dominio.png" alt="Register IP or domain" />
+</Frame>
+
+<Info>
+  **Recommendation:** Before saving, confirm with your technical team:
+  - What is the server's public IP
+  - Which domain will make the requests
+  - Whether there are separate staging and production environments
+</Info>
+
+---
+
+## Configuring webhooks
+
+Webhooks allow Gates2b to send automatic notifications to your system whenever a transaction-related event occurs. Instead of manually checking the platform all the time, your system receives updates in real time at the configured URL.
+
+With webhooks, your system can be notified when there are changes such as:
+
+- Charge creation
+- Status update
+- Payment confirmation
+- Failure or cancellation
+- Other API events available on the platform
+
+### How to register a webhook?
+
+1. Still on the **Integrations** tab
+2. Locate the **Webhooks** section
+3. Click **Add URL**
+4. Enter the URL that will receive the notifications
+5. Save the configuration
+
+Once registered, the webhook will appear listed on the screen.
+
+<Frame caption="Registering webhook">
+  <img src="/images/cadastrar-webhook.png" alt="Register webhook" />
+</Frame>
+
+### URL requirements
+
+- Accept requests from Gates2b
+- Be publicly accessible via the internet
+- Respond correctly upon receiving the event
+- Record received data for auditing and support
+
+### Best practices
+
+- Use an HTTPS URL
+- Keep the endpoint stable
+- Log incoming requests in your system
+- Validate received data before processing actions
+- Implement internal retries in case of failures in your processing
+
+---
+
+## Consulting Webhook Logs
+
+The **Webhook Logs** area allows you to track the history of notifications sent by Gates2b.
+
+### How to access?
+
+In the side menu, click on **"My Account"** and then click on **"Webhook Logs"**.
+
+<Frame caption="Webhook Logs">
+  <img src="/images/logs-webhook.png" alt="Webhook Logs" />
+</Frame>
+
+In the listing, you can view information such as:
+
+- Sending status
+- Unique ID
+- Sale ID that received the attempt
+- Option to view content
+- Date and time
+- Button to resend a webhook
+
+This screen is useful for verifying if the webhook was sent successfully, identifying communication failures, checking which charge triggered the event, analyzing the sent content, and resending notifications when necessary.
+
+---
+
+## Usage example
+
+1. Your store's system uses the API key to create charges
+2. The store's domain or IP is previously authorized
+3. When the payment is updated, Gates2b sends a webhook
+4. The store receives this event and automatically updates the order status
+5. If there is a failure, the merchant consults the **Webhook Logs** and can resend the notification
+
+This reduces manual processes and makes operations faster and more reliable.

@@ -1,0 +1,319 @@
+---
+title: "Criar Reembolso"
+sidebarTitle: "/refunds/invoice/{invoiceId}"
+api: "POST https://api.gates2b.com/refunds/invoice/{invoiceId}"
+authMethod: "authorization"
+description: "Esse endpoint cria um reembolso parcial ou total para uma venda específica."
+---
+
+<ParamField
+  header="Authorization"
+  type="string"
+  placeholder="Bearer {token}"
+  required
+>
+  O token de autenticação no formato Bearer é obrigatório para acessar este
+  endpoint.
+</ParamField>
+
+<ParamField path="invoiceId" type="string" placeholder="123" required>
+  ID da invoice (venda) para a qual será solicitado o reembolso.
+</ParamField>
+
+<ParamField body="value" type="number" placeholder="50.00">
+  Valor específico do reembolso. Se não informado, será processado um reembolso total do valor recebido na venda.
+</ParamField>
+
+<ParamField body="reason" type="string" placeholder="Produto com defeito">
+  Motivo do reembolso. Campo opcional utilizado para controle interno.
+</ParamField>
+
+### Response
+
+<ResponseField name="id" type="string">
+  Identificador único do reembolso criado.
+</ResponseField>
+
+<ResponseField name="invoice" type="object">
+  Dados da venda relacionada ao reembolso.
+  
+  <Expandable title="Mostrar objeto">
+    <ResponseField name="id" type="number">
+      ID da invoice relacionada.
+    </ResponseField>
+    <ResponseField name="transaction_pix_id" type="string">
+      Identificador único da transação PIX.
+    </ResponseField>
+    <ResponseField name="amount_final" type="number">
+      Valor final da transação após taxas.
+    </ResponseField>
+    <ResponseField name="status" type="string">
+      Status atual da invoice.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="user" type="object">
+  Dados do usuário que solicitou o reembolso.
+  
+  <Expandable title="Mostrar objeto">
+    <ResponseField name="id" type="number">
+      ID do usuário.
+    </ResponseField>
+    <ResponseField name="name" type="string">
+      Nome do usuário.
+    </ResponseField>
+    <ResponseField name="email" type="string">
+      E-mail do usuário.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="gateway" type="string">
+  Gateway utilizado para processar o reembolso (ex: PIX, IUGU).
+</ResponseField>
+
+<ResponseField name="transaction_id" type="string">
+  ID da transação original que está sendo reembolsada.
+</ResponseField>
+
+<ResponseField name="amount" type="number">
+  Valor do reembolso solicitado.
+</ResponseField>
+
+<ResponseField name="reason" type="string">
+  Motivo do reembolso informado na solicitação.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Status atual do reembolso. Possíveis valores:
+  - `REFUND_IN_PROGRESS`: Reembolso em processamento
+  - `REFUND_COMPLETED`: Reembolso concluído
+  - `REFUND_FAILED`: Reembolso falhou
+  - `REFUND_CANCELLED`: Reembolso cancelado
+</ResponseField>
+
+<ResponseField name="external_refund_id" type="string">
+  ID externo do reembolso fornecido pelo gateway.
+</ResponseField>
+
+<ResponseField name="created_at" type="string">
+  Data e hora de criação do reembolso.
+</ResponseField>
+
+<ResponseField name="updated_at" type="string">
+  Data e hora da última atualização do reembolso.
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL - Reembolso Parcial
+curl -X POST "https://api.gates2b.com/refunds/invoice/123" \
+  -H "Authorization: Bearer {seu-token}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "value": 50.00,
+    "reason": "Produto com defeito"
+  }'
+```
+
+```bash cURL - Reembolso Total
+curl -X POST "https://api.gates2b.com/refunds/invoice/123" \
+  -H "Authorization: Bearer {seu-token}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "reason": "Cancelamento da compra"
+  }'
+```
+
+```javascript
+// Reembolso parcial
+const response = await fetch(
+  "https://api.gates2b.com/refunds/invoice/123",
+  {
+    method: "POST",
+    headers: {
+      Authorization: "Bearer {seu-token}",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      value: 50.00,
+      reason: "Produto com defeito",
+    }),
+  }
+);
+
+const data = await response.json();
+```
+
+```javascript
+// Reembolso total
+const response = await fetch(
+  "https://api.gates2b.com/refunds/invoice/123",
+  {
+    method: "POST",
+    headers: {
+      Authorization: "Bearer {seu-token}",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      reason: "Cancelamento da compra",
+    }),
+  }
+);
+
+const data = await response.json();
+```
+
+```python
+import requests
+
+# Reembolso parcial
+url = "https://api.gates2b.com/refunds/invoice/123"
+headers = {
+    "Authorization": "Bearer {seu-token}",
+    "Content-Type": "application/json"
+}
+payload = {
+    "value": 50.00,
+    "reason": "Produto com defeito"
+}
+
+response = requests.post(url, headers=headers, json=payload)
+```
+
+```python
+# Reembolso total
+import requests
+
+url = "https://api.gates2b.com/refunds/invoice/123"
+headers = {
+    "Authorization": "Bearer {seu-token}",
+    "Content-Type": "application/json"
+}
+payload = {
+    "reason": "Cancelamento da compra"
+}
+
+response = requests.post(url, headers=headers, json=payload)
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Sucesso - Reembolso Parcial
+{
+  "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "invoice": {
+    "id": 123,
+    "transaction_pix_id": "NOX152OM61MC0REP3F7HMQYI7U14QU85",
+    "amount_final": 100.00,
+    "status": "REFUND_REQUESTED",
+    "med_amount": 0
+  },
+  "user": {
+    "id": 456,
+    "name": "João Silva",
+    "email": "joao@empresa.com"
+  },
+  "gateway": "PIX",
+  "transaction_id": "NOX152OM61MC0REP3F7HMQYI7U14QU85",
+  "amount": 50.00,
+  "reason": "Produto com defeito",
+  "status": "REFUND_IN_PROGRESS",
+  "external_refund_id": "",
+  "created_at": "2025-09-24T14:30:15.123Z",
+  "updated_at": "2025-09-24T14:30:15.123Z"
+}
+```
+
+```json Sucesso - Reembolso Total
+{
+  "id": "b2c3d4e5-f6g7-8901-bcde-f23456789012",
+  "invoice": {
+    "id": 124,
+    "transaction_pix_id": "NOX153PM62ND1SFQ4G8INRZKJ8V25RV96",
+    "amount_final": 75.50,
+    "status": "REFUND_REQUESTED",
+    "med_amount": 2.50
+  },
+  "user": {
+    "id": 789,
+    "name": "Maria Santos",
+    "email": "maria@empresa.com"
+  },
+  "gateway": "PIX",
+  "transaction_id": "NOX153PM62ND1SFQ4G8INRZKJ8V25RV96",
+  "amount": 78.00,
+  "reason": "Cancelamento da compra",
+  "status": "REFUND_IN_PROGRESS",
+  "external_refund_id": "",
+  "created_at": "2025-09-24T14:45:22.456Z",
+  "updated_at": "2025-09-24T14:45:22.456Z"
+}
+```
+
+```json Erro - Invoice não encontrada
+{
+  "error": "not_found",
+  "message": "Invoice not found",
+  "statusCode": 404
+}
+```
+
+```json Erro - Saldo insuficiente
+{
+  "error": "bad_request",
+  "message": "[Second Constraint] - Insufficient balance to process refund. Available: 25.00, Required: 50.00",
+  "statusCode": 400
+}
+```
+
+```json Erro - Invoice já reembolsada
+{
+  "error": "bad_request",
+  "message": "Invoice already refunded or refund in progress",
+  "statusCode": 400
+}
+```
+
+```json Erro - Valor inválido
+{
+  "error": "validation_error",
+  "message": "Dados de entrada inválidos",
+  "details": {
+    "value": "Valor deve ser positivo e não pode exceder o valor da venda"
+  }
+}
+```
+
+</ResponseExample>
+
+## Observações Importantes
+
+### Reembolso Parcial vs Total
+
+- **Reembolso Parcial**: Quando o parâmetro `value` é informado, o sistema processará um reembolso do valor especificado
+- **Reembolso Total**: Quando o parâmetro `value` não é informado, o sistema calculará automaticamente o valor total disponível para reembolso (valor recebido + valor MED)
+
+### Validações
+
+1. **Saldo Disponível**: O sistema verifica se há saldo suficiente na conta para processar o reembolso
+2. **Status da Invoice**: A invoice deve estar em status válido para reembolso (não pode estar já reembolsada)
+3. **Valor Máximo**: O valor do reembolso não pode exceder o valor total recebido na venda
+
+### Fluxo de Processamento
+
+1. **Criação**: O reembolso é criado com status `REFUND_IN_PROGRESS`
+2. **Processamento**: O sistema envia a solicitação para o gateway de pagamento
+3. **Conclusão**: Uma vez processado pelo gateway, o status é atualizado via webhook interno
+4. **Balanceamento**: O valor é debitado do saldo disponível do usuário
+
+### Códigos de Status HTTP
+
+- **201**: Reembolso criado com sucesso
+- **400**: Dados inválidos ou restrições de negócio
+- **401**: Token de autenticação inválido
+- **404**: Invoice não encontrada
+- **500**: Erro interno do servidor

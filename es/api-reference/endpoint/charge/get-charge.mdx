@@ -1,0 +1,157 @@
+---
+title: "Consultar Cobro"
+sidebarTitle: "GET /charge"
+api: "GET https://api.gates2b.com/charge/{chargeId}"
+authMethod: "authorization"
+description: "Consulta cobros por ID, referencia externa, listado paginado e intentos de pago."
+---
+
+<ParamField
+  header="Authorization"
+  type="string"
+  placeholder="Bearer {token}"
+  required
+>
+  Token de autenticación en formato Bearer.
+</ParamField>
+
+<ParamField path="chargeId" type="string" required>
+  ID del cobro.
+</ParamField>
+
+### Response
+
+<ResponseField name="id" type="string">
+  ID único del cobro.
+</ResponseField>
+
+<ResponseField name="grossAmount" type="string">
+  Monto bruto del cobro.
+</ResponseField>
+
+<ResponseField name="currency" type="string">
+  Moneda del cobro.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Estado actual del cobro (`PENDING`, `PAID`, `EXPIRED`, `CANCELED`).
+</ResponseField>
+
+<ResponseField name="description" type="string">
+  Descripción del cobro.
+</ResponseField>
+
+<ResponseField name="externalReference" type="string">
+  Referencia externa.
+</ResponseField>
+
+<ResponseField name="createdAt" type="string">
+  Fecha de creación (ISO 8601).
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl -X GET "https://api.gates2b.com/charge/{chargeId}" \
+  -H "Authorization: Bearer {su-token}"
+```
+
+```javascript
+const response = await fetch(
+  `https://api.gates2b.com/charge/${chargeId}`,
+  {
+    headers: {
+      Authorization: "Bearer {su-token}",
+    },
+  }
+);
+
+const data = await response.json();
+```
+
+```python
+import requests
+
+url = f"https://api.gates2b.com/charge/{charge_id}"
+headers = {"Authorization": "Bearer {su-token}"}
+
+response = requests.get(url, headers=headers)
+data = response.json()
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Éxito
+{
+  "id": "chr_abc123",
+  "grossAmount": "10.50",
+  "currency": "BRL",
+  "status": "PENDING",
+  "description": "Cobro de prueba",
+  "externalReference": "pedido-123",
+  "createdAt": "2026-01-15T14:00:00.000Z"
+}
+```
+
+```json Error - No Encontrado
+{
+  "error": "Not Found",
+  "message": "Cobro no encontrado",
+  "statusCode": 404
+}
+```
+
+```json Error - No Autorizado
+{
+  "error": "Unauthorized",
+  "message": "Token de autenticación ausente o inválido",
+  "statusCode": 401
+}
+```
+
+</ResponseExample>
+
+## Otras consultas disponibles
+
+### Listar Cobros
+
+`GET /charge/list?page=1&limit=10`
+
+Retorna la lista paginada de cobros del usuario autenticado.
+
+| Parámetro | Tipo | Descripción |
+|-----------|------|-------------|
+| `page` | number | Número de página (por defecto: 1) |
+| `limit` | number | Registros por página (por defecto: 10) |
+
+### Buscar por Referencia Externa
+
+`GET /charge?externalReference=pedido-123`
+
+Busca un cobro por la referencia externa de su sistema.
+
+| Parámetro | Tipo | Descripción |
+|-----------|------|-------------|
+| `externalReference` | string | Referencia externa usada en la creación |
+
+### Listar Intentos de un Cobro
+
+`GET /charge/{chargeId}/attempts`
+
+Retorna todos los intentos de pago asociados a un cobro. Cada intento contiene:
+
+| Campo | Tipo | Descripción |
+|-------|------|-------------|
+| `id` | string | ID del intento |
+| `chargeId` | string | ID del cobro |
+| `paymentMethod` | string | Método usado (`PIX`, `CREDIT_CARD`, `INTERNATIONAL`) |
+| `status` | string | Estado del intento |
+| `checkoutMeta` | object | Metadatos del gateway |
+
+### Buscar Intento Específico
+
+`GET /charge/attempts/{attemptId}`
+
+Retorna los detalles de un intento específico, incluyendo estado del gateway y `checkoutMeta`.

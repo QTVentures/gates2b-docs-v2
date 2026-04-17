@@ -1,0 +1,51 @@
+---
+title: "Webhooks"
+icon: "bell"
+description: "Os webhooks permitem que você receba notificações automáticas sempre que eventos importantes ocorrerem na sua conta Gates2b. Isso facilita a integração e automação de processos."
+---
+
+## O que são Webhooks?
+
+Webhooks são callbacks HTTP que enviam dados em tempo real para uma URL configurada por você sempre que determinados eventos acontecem. Isso elimina a necessidade de consultar a API repetidamente.
+
+## Quais eventos são enviados?
+
+Atualmente, o webhook é disparado sempre que o status de uma venda é alterado.  
+Exemplo de status enviado: **PAID** (Pagamento realizado).
+
+## Como configurar um Webhook?
+
+1. **Acesse o Painel de Integração:** Entre no [painel.gates2b.com](https://painel.gates2b.com).
+2. **Navegue até Integração:** Clique na opção **Integração** na barra de navegação.
+3. **Cadastre a URL do Webhook:** Adicione a URL para onde deseja receber as notificações e salve as alterações.
+
+<Tip>Você pode cadastrar múltiplas URLs para diferentes tipos de eventos!</Tip>
+
+## Exemplo de Payload (Status: PAID)
+
+```json
+{
+  "id": 72276,
+  "id_transaction": "26182891-7569-414f-aa60-ajkw1jke21",
+  "transaction_pix_id": "asqw2143-50d3-4de7-911d-awqasq131",
+  "external_reference": "2508280924481163",
+  "emv": "1231as12-aqkelqk-4de7-911d-ekajwkalq",
+  "amount": 120,
+  "status": "Pagamento realizado",
+  "international_status": "PAYMENT_RECEIVED",
+  "name_client": "JOAO PAULO SILVA CRUZ DE LIMA",
+  "document_client": "0000000000",
+  "createdAt": "2025-08-28T12:24:49.056Z",
+  "my_origin": "Gates2b",
+  "method": "Gates2b",
+  "user": {}
+}
+```
+
+## Política de Retry?
+
+Se a URL configurada não responder com o status HTTP 2xx, nosso sistema tentará reenviar a notificação por até 3 vezes com intervalos progressivos. Caso o erro persista, será necessário realizar a consulta manualmente pela API.
+
+## Suporte
+
+Caso tenha qualquer dúvida ou precise de assistência, entre em contato conosco pelo e-mail [suporte@gates2b.com.br](mailto:suporte@gates2b.com.br). Nossa equipe está disponível para garantir a melhor experiência de integração.

@@ -1,0 +1,234 @@
+---
+title: "Crear Pago"
+sidebarTitle: "/payments"
+api: "POST https://api.gates2b.com/payments"
+authMethod: "authorization"
+description: "Este endpoint crea un pago con vencimiento configurable."
+---
+
+<ParamField
+  header="Authorization"
+  type="string"
+  placeholder="Bearer {token}"
+  required
+>
+  El token de autenticacion en formato Bearer es obligatorio para acceder a este
+  endpoint.
+</ParamField>
+
+<ParamField
+  body="clientMode"
+  type="string"
+  placeholder="noNeedToSpecify | fillDataNow | requestCheckout"
+  required
+>
+  Define el modo de tratamiento de los datos del cliente. - `noNeedToSpecify`:
+  No requiere datos del cliente. - `fillDataNow`: Los datos del cliente deben
+  enviarse ahora. - `requestCheckout`: Los datos del cliente se completaran via
+  checkout.
+</ParamField>
+
+<ParamField body="amount" type="number" placeholder="150.50" required>
+  Valor del pago.
+</ParamField>
+
+<ParamField
+  body="expire_at"
+  type="string"
+  placeholder="2025-12-31T23:59:59Z"
+  required
+>
+  Fecha y hora de expiracion en formato ISO 8601.
+</ParamField>
+
+<ParamField
+  body="description"
+  type="string"
+  placeholder="Descrição do pagamento"
+>
+  Descripcion del pago. Campo opcional.
+</ParamField>
+
+<ParamField
+  body="external_reference"
+  type="string"
+  placeholder="Referência externa"
+>
+  Referencia externa de la aplicacion. Campo opcional.
+</ParamField>
+
+<ParamField
+  body="redirect_url"
+  type="string"
+  placeholder="https://sua-url.com/retorno"
+>
+  URL de redireccion despues del pago. Campo opcional.
+</ParamField>
+
+<ParamField body="phoneNumber" type="string" placeholder="+5511999999999">
+  Numero de telefono del cliente. Campo opcional.
+</ParamField>
+
+<ParamField body="email" type="string" placeholder="cliente@email.com">
+  Correo del cliente. Campo opcional.
+</ParamField>
+
+<ParamField body="document_type" type="string" placeholder="CPF | CNPJ">
+  Tipo de documento del cliente. Campo opcional.
+</ParamField>
+
+<ParamField body="name_client" type="string" placeholder="Nome do cliente">
+  Nombre del cliente. Campo opcional.
+</ParamField>
+
+<ParamField body="document_client" type="string" placeholder="12345678900">
+  Documento del cliente. Campo opcional.
+</ParamField>
+
+### Response
+
+<ResponseField name="status" type="number">
+  Codigo HTTP de la respuesta. Esperado: 201.
+</ResponseField>
+
+<ResponseField name="code" type="string">
+  Codigo interno de la operacion.
+</ResponseField>
+
+<ResponseField name="response" type="object">
+<Expandable title="Mostrar objeto">
+
+<ResponseField name="id" type="number">
+  Identificador unico del pago.
+</ResponseField>
+
+<ResponseField name="amount" type="number">
+  Valor del pago.
+</ResponseField>
+
+<ResponseField name="description" type="string">
+  Descripcion del pago.
+</ResponseField>
+
+<ResponseField name="clientMode" type="string">
+  Modo de tratamiento de datos del cliente.
+</ResponseField>
+
+<ResponseField name="redirect_url" type="string">
+  URL de redireccion.
+</ResponseField>
+
+<ResponseField name="email" type="string">
+  Correo del cliente.
+</ResponseField>
+
+<ResponseField name="phoneNumber" type="string">
+  Telefono del cliente.
+</ResponseField>
+
+<ResponseField name="document_type" type="string">
+  Tipo de documento del cliente.
+</ResponseField>
+
+<ResponseField name="expire_at" type="string">
+  Fecha de expiracion del pago.
+</ResponseField>
+
+<ResponseField name="document_client" type="string">
+  Documento del cliente.
+</ResponseField>
+
+<ResponseField name="document_type_client" type="string">
+  Tipo de documento del cliente.
+</ResponseField>
+
+<ResponseField name="name_client" type="string">
+  Nombre del cliente.
+</ResponseField>
+
+<ResponseField name="external_reference" type="string">
+  Referencia externa de la aplicacion.
+</ResponseField>
+
+<ResponseField name="id_transaction" type="string">
+  Identificador de la transaccion.
+</ResponseField>
+
+<ResponseField name="transaction_pix_id" type="string">
+  Identificador de la transaccion Pix.
+</ResponseField>
+
+<ResponseField name="emv" type="string">
+  Codigo EMV de Pix.
+</ResponseField>
+
+<ResponseField name="name_receiver" type="string">
+  Nombre del receptor.
+</ResponseField>
+
+<ResponseField name="document_receiver" type="string">
+  Documento del receptor.
+</ResponseField>
+
+<ResponseField name="document_type_receiver" type="string">
+  Tipo de documento del receptor.
+</ResponseField>
+
+<ResponseField name="qr_image" type="string">
+  QR code en base64 para pago Pix.
+</ResponseField>
+
+<ResponseField name="qr_text" type="string">
+  Codigo del QR Pix en texto.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Estado actual del pago.
+</ResponseField>
+
+<ResponseField name="checkout_id" type="string">
+  Identificador del checkout generado.
+</ResponseField>
+
+<ResponseField name="createdAt" type="string">
+  Fecha de creacion del pago (timezone: America/Sao_Paulo).
+</ResponseField>
+
+<ResponseField name="updatedAt" type="string">
+  Fecha de actualizacion del pago (timezone: America/Sao_Paulo).
+</ResponseField>
+
+</Expandable>
+</ResponseField>
+
+<ResponseExample>
+```json
+{
+  "id": 12345,
+  "amount": 150.5,
+  "description": "Pagamento mensalidade",
+  "clientMode": "fillDataNow",
+  "redirect_url": "https://minhaapp.com/retorno",
+  "email": "cliente@exemplo.com",
+  "phoneNumber": "+5511999999999",
+  "document_type": "CPF",
+  "expire_at": "2025-12-31T23:59:59Z",
+  "document_client": "12345678900",
+  "document_type_client": "CPF",
+  "name_client": "João da Silva",
+  "external_reference": "pedido-123",
+  "id_transaction": "abc123xyz",
+  "transaction_pix_id": "TRXPIX001",
+  "emv": "00020101021226960014...",
+  "name_receiver": "Empresa LTDA",
+  "document_receiver": "11222333444455",
+  "document_type_receiver": "CNPJ",
+  "qr_image": "iVBORw0KGgoAAAANSUhEUgAAAQAAAAEAAQMAAABmvDol...",
+  "qr_text": "00020101021226840014br.gov.bcb.pix2562...",
+  "status": "Aguardando pagamento",
+  "checkout_id": "ck_987654321",
+  "createdAt": "2025-06-27T14:00:00-03:00",
+  "updatedAt": "2025-06-27T14:00:00-03:00"
+}
+```
+</ResponseExample>

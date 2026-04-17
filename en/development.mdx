@@ -1,0 +1,33 @@
+---
+title: "HTTP Response Codes"
+description: "Our API uses conventional HTTP responses to indicate success or failure in requests. Responses with status 200 indicate success, 4xx indicate failures caused by errors in the submitted information, and 500 indicate internal server errors."
+---
+
+<Info>**Attention** All API endpoints receive and return JSON.</Info>
+
+```json
+{
+    "errors":[
+        {
+            "code":"invalid_value",
+            "description":"O campo value deve ser informado"
+        },
+        {
+            "code":"invalid_dueDate",
+            "description":"A data de vencimento não pode ser inferior à hoje"
+        }
+    ]
+}
+}
+```
+
+| HTTP Code                        | Description                                                                                                                     |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| 200 OK                           | Your request was successful.                                                                                                    |
+| 400 Bad Request                  | A required parameter was not sent or is invalid. In this case, the response itself will indicate the problem.                   |
+| 401 Unauthorized                 | No API Key was sent or it is invalid.                                                                                           |
+| 403 Forbidden                    | Unauthorized request. API abuse or use of disallowed parameters can generate this code.                                         |
+| 403 Forbidden / Cloudfront (GET) | 403 errors on GET calls indicate that you are sending a body with the request. You must not send any body data in GET requests. |
+| 404 Not Found                    | The endpoint or requested object does not exist.                                                                                |
+| 429 Too Many Requests            | Too many requests in a given time period. More in our Rate Limiting section.                                                    |
+| 500 Internal Server Error        | Something went wrong on the gates2b server.                                                                                     |

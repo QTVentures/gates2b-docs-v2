@@ -1,0 +1,232 @@
+---
+title: "Create Payment"
+sidebarTitle: "/payments"
+api: "POST https://api.gates2b.com/payments"
+authMethod: "authorization"
+description: "This endpoint creates a payment with configurable due date."
+---
+
+<ParamField
+  header="Authorization"
+  type="string"
+  placeholder="Bearer {token}"
+  required
+>
+  The Bearer authentication token is required to access this endpoint.
+</ParamField>
+
+<ParamField
+  body="clientMode"
+  type="string"
+  placeholder="noNeedToSpecify | fillDataNow | requestCheckout"
+  required
+>
+  Defines how customer data is handled. - `noNeedToSpecify`: No customer data
+  required. - `fillDataNow`: Customer data must be provided now. -
+  `requestCheckout`: Customer data will be collected via checkout.
+</ParamField>
+
+<ParamField body="amount" type="number" placeholder="150.50" required>
+  Payment amount.
+</ParamField>
+
+<ParamField
+  body="expire_at"
+  type="string"
+  placeholder="2025-12-31T23:59:59Z"
+  required
+>
+  Expiration date and time in ISO 8601 format.
+</ParamField>
+
+<ParamField
+  body="description"
+  type="string"
+  placeholder="Descrição do pagamento"
+>
+  Payment description. Optional field.
+</ParamField>
+
+<ParamField
+  body="external_reference"
+  type="string"
+  placeholder="Referência externa"
+>
+  External reference for your application. Optional field.
+</ParamField>
+
+<ParamField
+  body="redirect_url"
+  type="string"
+  placeholder="https://sua-url.com/retorno"
+>
+  Redirect URL after payment. Optional field.
+</ParamField>
+
+<ParamField body="phoneNumber" type="string" placeholder="+5511999999999">
+  Customer phone number. Optional field.
+</ParamField>
+
+<ParamField body="email" type="string" placeholder="cliente@email.com">
+  Customer email. Optional field.
+</ParamField>
+
+<ParamField body="document_type" type="string" placeholder="CPF | CNPJ">
+  Customer document type. Optional field.
+</ParamField>
+
+<ParamField body="name_client" type="string" placeholder="Nome do cliente">
+  Customer name. Optional field.
+</ParamField>
+
+<ParamField body="document_client" type="string" placeholder="12345678900">
+  Customer document. Optional field.
+</ParamField>
+
+### Response
+
+<ResponseField name="status" type="number">
+  HTTP response code. Expected: 201.
+</ResponseField>
+
+<ResponseField name="code" type="string">
+  Internal operation code.
+</ResponseField>
+
+<ResponseField name="response" type="object">
+<Expandable title="Mostrar objeto">
+
+<ResponseField name="id" type="number">
+  Unique payment identifier.
+</ResponseField>
+
+<ResponseField name="amount" type="number">
+  Payment amount.
+</ResponseField>
+
+<ResponseField name="description" type="string">
+  Payment description.
+</ResponseField>
+
+<ResponseField name="clientMode" type="string">
+  Customer data handling mode.
+</ResponseField>
+
+<ResponseField name="redirect_url" type="string">
+  Redirect URL.
+</ResponseField>
+
+<ResponseField name="email" type="string">
+  Customer email.
+</ResponseField>
+
+<ResponseField name="phoneNumber" type="string">
+  Customer phone number.
+</ResponseField>
+
+<ResponseField name="document_type" type="string">
+  Customer document type.
+</ResponseField>
+
+<ResponseField name="expire_at" type="string">
+  Payment expiration date.
+</ResponseField>
+
+<ResponseField name="document_client" type="string">
+  Customer document.
+</ResponseField>
+
+<ResponseField name="document_type_client" type="string">
+  Customer document type.
+</ResponseField>
+
+<ResponseField name="name_client" type="string">
+  Customer name.
+</ResponseField>
+
+<ResponseField name="external_reference" type="string">
+  External reference for your application.
+</ResponseField>
+
+<ResponseField name="id_transaction" type="string">
+  Transaction identifier.
+</ResponseField>
+
+<ResponseField name="transaction_pix_id" type="string">
+  Pix transaction identifier.
+</ResponseField>
+
+<ResponseField name="emv" type="string">
+  Pix EMV code.
+</ResponseField>
+
+<ResponseField name="name_receiver" type="string">
+  Receiver name.
+</ResponseField>
+
+<ResponseField name="document_receiver" type="string">
+  Receiver document.
+</ResponseField>
+
+<ResponseField name="document_type_receiver" type="string">
+  Receiver document type.
+</ResponseField>
+
+<ResponseField name="qr_image" type="string">
+  Base64 QR code for Pix payment.
+</ResponseField>
+
+<ResponseField name="qr_text" type="string">
+  Pix QR code text.
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Current payment status.
+</ResponseField>
+
+<ResponseField name="checkout_id" type="string">
+  Generated checkout identifier.
+</ResponseField>
+
+<ResponseField name="createdAt" type="string">
+  Payment creation date (timezone: America/Sao_Paulo).
+</ResponseField>
+
+<ResponseField name="updatedAt" type="string">
+  Payment update date (timezone: America/Sao_Paulo).
+</ResponseField>
+
+</Expandable>
+</ResponseField>
+
+<ResponseExample>
+```json
+{
+  "id": 12345,
+  "amount": 150.5,
+  "description": "Pagamento mensalidade",
+  "clientMode": "fillDataNow",
+  "redirect_url": "https://minhaapp.com/retorno",
+  "email": "cliente@exemplo.com",
+  "phoneNumber": "+5511999999999",
+  "document_type": "CPF",
+  "expire_at": "2025-12-31T23:59:59Z",
+  "document_client": "12345678900",
+  "document_type_client": "CPF",
+  "name_client": "João da Silva",
+  "external_reference": "pedido-123",
+  "id_transaction": "abc123xyz",
+  "transaction_pix_id": "TRXPIX001",
+  "emv": "00020101021226960014...",
+  "name_receiver": "Empresa LTDA",
+  "document_receiver": "11222333444455",
+  "document_type_receiver": "CNPJ",
+  "qr_image": "iVBORw0KGgoAAAANSUhEUgAAAQAAAAEAAQMAAABmvDol...",
+  "qr_text": "00020101021226840014br.gov.bcb.pix2562...",
+  "status": "Aguardando pagamento",
+  "checkout_id": "ck_987654321",
+  "createdAt": "2025-06-27T14:00:00-03:00",
+  "updatedAt": "2025-06-27T14:00:00-03:00"
+}
+```
+</ResponseExample>

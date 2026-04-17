@@ -1,0 +1,60 @@
+---
+title: "Validar API Key"
+sidebarTitle: "/api-key/validate"
+api: "GET https://api.gates2b.com/api-key/validate"
+authMethod: "authorization"
+description: "Este endpoint valida si la API key proporcionada es valida."
+---
+
+<ParamField
+  header="Authorization"
+  type="string"
+  placeholder="Bearer {token}"
+  required
+>
+  El token de autenticacion en formato Bearer es obligatorio para acceder a este
+  endpoint.
+</ParamField>
+
+### Response
+
+<ResponseField name="status" type="number">
+  Codigo HTTP de la respuesta. Esperado: 200 para API key valida, 401 para
+  invalida.
+</ResponseField>
+
+<ResponseField name="code" type="string">
+  Codigo interno de la operacion.
+</ResponseField>
+
+<ResponseField name="response" type="object">
+<Expandable title="Mostrar objeto">
+
+<ResponseField name="valid" type="boolean">
+  Indica si la API key es valida.
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  Mensaje descriptivo sobre el estado de la validacion.
+</ResponseField>
+
+<ResponseField name="expires_at" type="string">
+  Fecha de expiracion de la API key (si aplica).
+</ResponseField>
+
+</Expandable>
+</ResponseField>
+
+<ResponseExample>
+```json
+{
+  "status": 200,
+  "code": "API_KEY_VALID",
+  "response": {
+    "valid": true,
+    "message": "API key is valid",
+    "expires_at": null
+  }
+}
+```
+</ResponseExample>

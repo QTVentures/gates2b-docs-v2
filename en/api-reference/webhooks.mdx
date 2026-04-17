@@ -1,0 +1,51 @@
+---
+title: "Webhooks"
+icon: "bell"
+description: "Webhooks let you receive automatic notifications whenever important events occur in your Gates2b account. This simplifies integration and process automation."
+---
+
+## What are Webhooks?
+
+Webhooks are HTTP callbacks that send data in real time to a URL you configure whenever certain events happen. This removes the need to poll the API repeatedly.
+
+## Which events are sent?
+
+Currently, the webhook is triggered whenever a sale status changes.  
+Example status sent: **PAID** (Payment completed).
+
+## How to configure a Webhook
+
+1. **Access the Integration Panel:** Go to [painel.gates2b.com](https://painel.gates2b.com).
+2. **Navigate to Integration:** Click **Integration** in the navigation bar.
+3. **Register the Webhook URL:** Add the URL where you want to receive notifications and save the changes.
+
+<Tip>You can register multiple URLs for different event types.</Tip>
+
+## Payload Example (Status: PAID)
+
+```json
+{
+  "id": 72276,
+  "id_transaction": "26182891-7569-414f-aa60-ajkw1jke21",
+  "transaction_pix_id": "asqw2143-50d3-4de7-911d-awqasq131",
+  "external_reference": "2508280924481163",
+  "emv": "1231as12-aqkelqk-4de7-911d-ekajwkalq",
+  "amount": 120,
+  "status": "Pagamento realizado",
+  "international_status": "PAYMENT_RECEIVED",
+  "name_client": "JOAO PAULO SILVA CRUZ DE LIMA",
+  "document_client": "0000000000",
+  "createdAt": "2025-08-28T12:24:49.056Z",
+  "my_origin": "Gates2b",
+  "method": "Gates2b",
+  "user": {}
+}
+```
+
+## Retry Policy
+
+If the configured URL does not respond with HTTP status 2xx, our system will try to resend the notification up to 3 times with progressive intervals. If the error persists, you will need to query the API manually.
+
+## Support
+
+If you have any questions or need assistance, contact us at [suporte@gates2b.com.br](mailto:suporte@gates2b.com.br). Our team is available to ensure the best integration experience.

@@ -1,0 +1,34 @@
+/* ======================================================
+   Reembolso / Refund — sidebar desabilitado + tooltip
+   ====================================================== */
+
+/* Link do reembolso na sidebar: desabilita clique e reduz opacidade */
+a[href*="endpoint/refund"] {
+  pointer-events: none !important;
+  opacity: 0.45 !important;
+}
+
+/* Pai do link: cursor de bloqueado + posição relativa pro tooltip */
+:has(> a[href*="endpoint/refund"]) {
+  position: relative;
+  cursor: not-allowed !important;
+}
+
+/* Tooltip ao passar o mouse sobre o item pai */
+:has(> a[href*="endpoint/refund"]):hover::after {
+  content: "Endpoint em manutenção";
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 4px);
+  transform: translateX(-50%);
+  background: #1f2937;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  z-index: 9999;
+  pointer-events: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
