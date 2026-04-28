@@ -1,6 +1,6 @@
 ---
 title: "URL do servidor"
-description: "Servidor MCP hospedado da Documentação Gates2b e URL de conexão."
+description: "Servidor MCP hospedado da Documentação Gates2b, URL de conexão e ferramentas MCP disponíveis."
 ---
 
 ## Servidor MCP hospedado
@@ -12,3 +12,39 @@ Acesse o servidor MCP. Use a URL abaixo para conectar aplicações de IA ao cont
 </Info>
 
 Conecte clientes de IA (por exemplo, Cursor, Claude ou outras aplicações compatíveis com MCP) apontando para essa URL, conforme a configuração do seu produto.
+
+---
+
+## Ferramentas disponíveis
+
+Ferramentas expostas aos clientes de IA conectados.
+
+### `search_documentação_gates2b`
+
+Busca na base de conhecimento **Documentação Gates2b** para encontrar informações relevantes, exemplos de código, referências de API e guias. Use esta ferramenta quando precisar responder dúvidas sobre a Documentação Gates2b, localizar documentação específica, entender como os recursos funcionam ou achar detalhes de implementação. A busca retorna conteúdo contextual com títulos e links diretos para as páginas. Se precisar do conteúdo completo de uma página, use a ferramenta `query_docs_filesystem_documentação_gates2b` com `head` ou `cat` no caminho da página (adicione `.mdx` ao caminho retornado na busca — por exemplo, `head -200 /api-reference/create-customer.mdx`).
+
+### `query_docs_filesystem_documentação_gates2b`
+
+Executa consultas somente leitura, no estilo shell, contra um **sistema de arquivos virtual em memória** com raiz em `/`, contendo **apenas** as páginas da documentação Documentação Gates2b e as especificações OpenAPI. **Não** é um shell em uma máquina real — nada roda no computador do usuário, no host do servidor ou em qualquer rede. O filesystem é um sandbox apoiado em trechos da documentação.
+
+**Como ler páginas da documentação:** não existe uma ferramenta separada "obter página". Para ler uma página, passe o caminho `.mdx` (por exemplo, `/quickstart.mdx`, `/api-reference/create-customer.mdx`) a `head` ou `cat`. Para buscar na documentação com palavra-chave ou regex exatas, use `rg`. Para entender a estrutura da documentação, use `tree` ou `ls`.
+
+**Fluxo de trabalho:** comece com a ferramenta de busca para perguntas amplas ou conceituais como "como autenticar" ou "rate limiting". Use esta ferramenta quando precisar de correspondência exata por palavra/regex, exploração estrutural ou leitura do conteúdo completo de uma página por caminho.
+
+**Comandos suportados:** `rg` (ripgrep), `grep`, `find`, `tree`, `ls`, `cat`, `head`, `tail`, `stat`, `wc`, `sort`, `uniq`, `cut`, `sed`, `awk`, `jq` e utilitários de texto básicos. Sem gravação, sem rede, sem controle de processos. Execute `--help` em qualquer comando para ver o uso.
+
+Cada chamada é **sem estado:** o diretório de trabalho sempre volta a `/` e variáveis, aliases e histórico do shell **não** se propagam entre chamadas. Se precisar operar em um subdiretório, encadeie comandos em uma única chamada com `&&` ou use caminhos absolutos (por exemplo, `cd /api-reference && ls` ou `ls /api-reference`). **Não** assuma que `cd` em uma chamada afeta a próxima.
+
+**Exemplos:**
+
+- `tree / -L 2` — visão do diretório de primeiro nível
+- `rg -il "rate limit" /` — arquivos que mencionam "rate limit"
+- `rg -C 3 "apiKey" /api-reference/` — correspondências com 3 linhas de contexto em torno de cada ocorrência
+- `head -80 /quickstart.mdx` — leitura das primeiras 80 linhas de uma página
+- `head -80 /quickstart.mdx /installation.mdx /guides/first-deploy.mdx` — várias páginas em uma chamada
+- `cat /api-reference/create-customer.mdx` — página inteira quando precisar de tudo
+- `cat /openapi/spec.json | jq '.paths | keys'` — listar endpoints OpenAPI
+
+A saída é truncada em **30KB** por chamada. Prefira `rg -C` ou `head -N` a um `cat` muito amplo em arquivos grandes. Para ler apenas trechos relevantes de um arquivo grande, use `rg -C 3 "padrão" /caminho/arquivo.mdx`. Agrupe várias leituras em um único `head` ou `cat` quando possível.
+
+Ao citar páginas na resposta ao usuário, converta caminhos do filesystem em caminhos de URL removendo a extensão `.mdx`. Por exemplo, `/quickstart.mdx` vira `/quickstart` e `/api-reference/overview.mdx` vira `/api-reference/overview`.

@@ -1,6 +1,6 @@
 ---
 title: "URL del servidor"
-description: "Servidor MCP alojado de la Documentación Gates2b y URL de conexión."
+description: "Servidor MCP alojado de la Documentación Gates2b, URL de conexión y herramientas MCP disponibles."
 ---
 
 ## Servidor MCP alojado
@@ -12,3 +12,39 @@ Acceda a su servidor MCP. Use la URL siguiente para conectar aplicaciones de IA 
 </Info>
 
 Conecte clientes de IA (por ejemplo, Cursor, Claude u otras aplicaciones compatibles con MCP) apuntando a esta URL según la configuración de su producto.
+
+---
+
+## Herramientas disponibles
+
+Herramientas expuestas a los clientes de IA conectados.
+
+### `search_documentação_gates2b`
+
+Busca en la base de conocimiento **Documentación Gates2b** para encontrar información relevante, ejemplos de código, referencias de API y guías. Use esta herramienta cuando necesite responder preguntas sobre la Documentación Gates2b, localizar documentación específica, entender cómo funcionan las funciones o ubicar detalles de implementación. La búsqueda devuelve contenido contextual con títulos y enlaces directos a las páginas. Si necesita el contenido completo de una página, use la herramienta `query_docs_filesystem_documentação_gates2b` con `head` o `cat` en la ruta de la página (añada `.mdx` a la ruta devuelta por la búsqueda — por ejemplo, `head -200 /api-reference/create-customer.mdx`).
+
+### `query_docs_filesystem_documentação_gates2b`
+
+Ejecuta consultas de solo lectura, tipo shell, contra un **sistema de archivos virtual en memoria** con raíz en `/` que contiene **solo** las páginas de la documentación Documentación Gates2b y las especificaciones OpenAPI. **No** es un shell en una máquina real — nada se ejecuta en el equipo del usuario, el host del servidor ni en ninguna red. El sistema de archivos es un sandbox respaldado por fragmentos de documentación.
+
+**Cómo leer páginas de documentación:** no hay una herramienta separada “obtener página”. Para leer una página, pase su ruta `.mdx` (por ejemplo, `/quickstart.mdx`, `/api-reference/create-customer.mdx`) a `head` o `cat`. Para buscar en la documentación con palabra clave o regex exactas, use `rg`. Para entender la estructura, use `tree` o `ls`.
+
+**Flujo de trabajo:** comience con la herramienta de búsqueda para consultas amplias o conceptuales como “cómo autenticar” o “rate limiting”. Use esta herramienta cuando necesite coincidencia exacta por palabra/regex, exploración estructural o lectura del contenido completo de una página por ruta.
+
+**Comandos admitidos:** `rg` (ripgrep), `grep`, `find`, `tree`, `ls`, `cat`, `head`, `tail`, `stat`, `wc`, `sort`, `uniq`, `cut`, `sed`, `awk`, `jq` y utilidades de texto básicas. Sin escritura, sin red, sin control de procesos. Ejecute `--help` en cualquier comando para ver el uso.
+
+Cada llamada es **sin estado:** el directorio de trabajo siempre vuelve a `/` y las variables, alias e historial del shell **no** se propagan entre llamadas. Si necesita operar en un subdirectorio, encadene comandos en una sola llamada con `&&` o use rutas absolutas (por ejemplo, `cd /api-reference && ls` o `ls /api-reference`). **No** asuma que `cd` en una llamada afecta a la siguiente.
+
+**Ejemplos:**
+
+- `tree / -L 2` — vista del directorio de primer nivel
+- `rg -il "rate limit" /` — archivos que mencionan “rate limit”
+- `rg -C 3 "apiKey" /api-reference/` — coincidencias con 3 líneas de contexto alrededor de cada hallazgo
+- `head -80 /quickstart.mdx` — leer las primeras 80 líneas de una página
+- `head -80 /quickstart.mdx /installation.mdx /guides/first-deploy.mdx` — varias páginas en una llamada
+- `cat /api-reference/create-customer.mdx` — página completa cuando necesite todo el contenido
+- `cat /openapi/spec.json | jq '.paths | keys'` — listar endpoints OpenAPI
+
+La salida se trunca en **30KB** por llamada. Prefiera `rg -C` o `head -N` a un `cat` muy amplio en archivos grandes. Para leer solo las secciones relevantes de un archivo grande, use `rg -C 3 "patrón" /ruta/archivo.mdx`. Agrupe varias lecturas en un solo `head` o `cat` cuando sea posible.
+
+Al citar páginas en la respuesta al usuario, convierta rutas del sistema de archivos en rutas URL quitando la extensión `.mdx`. Por ejemplo, `/quickstart.mdx` pasa a `/quickstart` y `/api-reference/overview.mdx` pasa a `/api-reference/overview`.
