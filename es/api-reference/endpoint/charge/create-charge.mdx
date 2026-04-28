@@ -3,27 +3,45 @@ title: "Crear Cobro"
 sidebarTitle: "POST /charge"
 api: "POST https://api.gates2b.com/charge"
 authMethod: "authorization"
-description: "Crea un nuevo cobro. Opcionalmente, puede crear el primer intento de pago junto (ej.: PIX). También permite crear intentos independientes vía POST /charge/:chargeId/attempts."
+description: "Crea un cobro. Opcionalmente crea el primer intento de pago junto (PIX o INTERNATIONAL) en un único request. También es posible crear intentos independientes después vía POST /charge/{chargeId}/attempts."
 ---
 
-<ParamField
-  header="Authorization"
-  type="string"
-  placeholder="Bearer {token}"
-  required
->
+<Info>
+`paymentMethod = CREDIT_CARD` **no está permitido** en este endpoint — los datos sensibles de tarjeta deben pasar únicamente por el checkout público (`POST /charge/{id}/checkout/payment` con `X-Checkout-Token`).
+</Info>
+
+<Note>
+  <Badge color="green">Nuevo</Badge> **División de Pago** — distribuya el valor del cobro entre múltiples destinatarios usando el campo `split[]`. Soporta valor fijo (`FIXED` en BRL) y porcentaje (`PERCENT` sobre el `netAmount`). Vea los detalles en la sección de parámetros a continuación.
+</Note>
+
+## Parámetros
+
+<ParamField header="Authorization" type="string" placeholder="Bearer {token}" required>
   Token de autenticación en formato Bearer.
 </ParamField>
 
 <ParamField body="grossAmount" type="string" placeholder="10.50" required>
-  Monto bruto del cobro.
+  Monto bruto del cobro en BRL (dos decimales).
 </ParamField>
 
 <ParamField body="currency" type="string" placeholder="BRL" required>
-  Moneda del cobro (ISO 4217).
+  Moneda del cobro (ISO 4217). Actualmente siempre `BRL` — para pago en otra moneda, use `checkoutCurrency` con `paymentMethod = INTERNATIONAL`.
 </ParamField>
 
-<ParamField body="description" type="string" placeholder="Descripción del cobro">
+<ParamField body="paymentMethod" type="string" placeholder="PIX">
+  Si se informa, crea el primer intento junto con el cobro.
+  Valores aceptados:
+  - `PIX` — crea un intento con instrucciones PIX (QR code, EMV).
+  - `INTERNATIONAL` — crea una sesión de checkout vía Revolut. Requiere `checkoutCurrency`.
+
+  Si se omite, el cobro se crea en `PENDING` sin intento.
+</ParamField>
+
+<ParamField body="checkoutCurrency" type="string" placeholder="USD">
+  Moneda en la que el pagador pagará en el gateway (ISO 4217, ej.: `USD`, `EUR`, `MXN`). **Obligatorio** cuando `paymentMethod = INTERNATIONAL`.
+</ParamField>
+
+<ParamField body="description" type="string" placeholder="Cobro de prueba">
   Descripción libre del cobro.
 </ParamField>
 
@@ -35,62 +53,138 @@ description: "Crea un nuevo cobro. Opcionalmente, puede crear el primer intento 
   Referencia externa de su sistema para rastreo.
 </ParamField>
 
-<ParamField body="paymentMethod" type="string" placeholder="PIX">
-  Método de pago para crear el primer intento junto con el cobro. Si se omite, solo se crea el cobro con estado `PENDING`.
-</ParamField>
-
 <ParamField body="attemptIdempotencyKey" type="string" placeholder="uuid-v4">
-  Clave de idempotencia para el intento (obligatorio cuando se informa `paymentMethod`).
+  Clave de idempotencia para el intento. Reusar la misma clave retorna 409.
 </ParamField>
 
-<ParamField body="customerMeta" type="object">
-  Datos del cliente asociado al cobro.
+<ParamField body="webhookUrl" type="string" placeholder="https://su-sitio.com/webhooks/charge">
+  URL llamada cuando el cobro sea pagado (POST con payload).
+</ParamField>
+
+<ParamField body="gatewayOptions" type="object">
   <Expandable title="Campos">
-    <ParamField body="name" type="string">Nombre del cliente.</ParamField>
-    <ParamField body="email" type="string">Correo electrónico del cliente.</ParamField>
-    <ParamField body="document" type="string">Documento del cliente (CPF/CNPJ).</ParamField>
-    <ParamField body="phone" type="string">Teléfono del cliente.</ParamField>
-    <ParamField body="source" type="string" placeholder="PRE_FILLED">Origen de los datos del cliente.</ParamField>
+    <ParamField body="redirectUrl" type="string">URL de retorno después del pago (Revolut).</ParamField>
+    <ParamField body="expireAt" type="string">Expiración del intento en el gateway (ISO 8601).</ParamField>
   </Expandable>
 </ParamField>
 
-### Response
+<ParamField body="customerMeta" type="object">
+  Datos del cliente. Usados por los gateways cuando no sean reemplazados en el momento del pago.
+  <Expandable title="Campos">
+    <ParamField body="name" type="string">Nombre del cliente.</ParamField>
+    <ParamField body="email" type="string">Correo electrónico del cliente.</ParamField>
+    <ParamField body="document" type="string">Documento (CPF/CNPJ).</ParamField>
+    <ParamField body="document_type" type="string">Tipo de documento.</ParamField>
+    <ParamField body="phone" type="string">Teléfono.</ParamField>
+    <ParamField body="source" type="string" placeholder="PRE_FILLED">Origen (`PRE_FILLED` o `COLLECT_AT_CHECKOUT`).</ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="split" type="array">
+  <Badge color="green">Nuevo</Badge> Lista de destinatarios para la división de pago. Omitir este campo crea el cobro sin división.
+  <Expandable title="Campos de cada ítem">
+    <ParamField body="email" type="string" required>
+      Correo electrónico del destinatario registrado en la plataforma.
+
+      <Warning>
+        El destinatario debe tener una cuenta activa en la plataforma como usuario `CUSTOMER`. Los correos no encontrados o de usuarios con otro perfil quedan como residual para el dueño del cobro — **no bloquea la creación**, pero el monto no será transferido al destinatario previsto.
+      </Warning>
+    </ParamField>
+    <ParamField body="kind" type="string" required>
+      Tipo de división:
+      - `FIXED` — valor fijo en BRL (informe `amount`). Suma de ítems FIXED debe ser ≤ `grossAmount`.
+      - `PERCENT` — porcentaje sobre el `netAmount` (informe `percent`). Suma de ítems PERCENT debe ser ≤ 100.
+    </ParamField>
+    <ParamField body="amount" type="string" placeholder="50.00">
+      Valor fijo en BRL (ej.: `"50.00"`). **Obligatorio** cuando `kind = FIXED`.
+    </ParamField>
+    <ParamField body="percent" type="number" placeholder="10">
+      Porcentaje de 0.01 a 100. **Obligatorio** cuando `kind = PERCENT`.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+## Respuesta
 
 <ResponseField name="id" type="string">
-  ID único del cobro creado (o del intento, cuando se informa `paymentMethod`).
-</ResponseField>
-
-<ResponseField name="grossAmount" type="string">
-  Monto bruto del cobro.
-</ResponseField>
-
-<ResponseField name="currency" type="string">
-  Moneda del cobro.
-</ResponseField>
-
-<ResponseField name="status" type="string">
-  Estado actual (`PENDING`, `PAID`, `EXPIRED`, `CANCELED`).
-</ResponseField>
-
-<ResponseField name="description" type="string">
-  Descripción del cobro.
-</ResponseField>
-
-<ResponseField name="externalReference" type="string">
-  Referencia externa informada en la creación.
-</ResponseField>
-
-<ResponseField name="expiresAt" type="string">
-  Fecha de expiración.
-</ResponseField>
-
-<ResponseField name="createdAt" type="string">
-  Fecha de creación (ISO 8601).
+  Sin `paymentMethod`: ID del **cobro**.
+  Con `paymentMethod`: ID del **intento** (el ID del cobro va en `chargeId`).
 </ResponseField>
 
 <ResponseField name="chargeId" type="string">
-  ID del cobro (retornado cuando se informa `paymentMethod` y la respuesta es el intento).
+  ID del cobro (presente solo cuando la respuesta es un intento).
 </ResponseField>
+
+<ResponseField name="status" type="string">
+  `PENDING` / `PROCESSING` / `PAID` / `EXPIRED` / `CANCELED` / `FAILED` / `REFUNDED`.
+</ResponseField>
+
+<ResponseField name="paymentMethod" type="string">
+  `PIX` o `INTERNATIONAL` (presente solo cuando hay un intento).
+</ResponseField>
+
+<ResponseField name="grossAmount" type="string">
+  Monto bruto del cobro (2 decimales).
+</ResponseField>
+
+<ResponseField name="currency" type="string">
+  Moneda del cobro (ISO 4217).
+</ResponseField>
+
+<ResponseField name="checkoutMeta" type="object">
+  Instrucciones para que el front-end complete el pago.
+  <Expandable title="Campos">
+    <ResponseField name="url" type="string">URL pública del checkout.</ResponseField>
+    <ResponseField name="paymentMethod" type="string">Método (`PIX` / `INTERNATIONAL`).</ResponseField>
+    <ResponseField name="qr_image" type="string">Imagen QR en Base64 (solo PIX).</ResponseField>
+    <ResponseField name="qr_text" type="string">PIX BR Code en texto (solo PIX).</ResponseField>
+    <ResponseField name="emv" type="string">PIX EMV (solo PIX).</ResponseField>
+    <ResponseField name="integrationToken" type="string">Token público para inicializar el Revolut Checkout Web SDK (solo INTERNATIONAL).</ResponseField>
+    <ResponseField name="currency" type="string">Moneda del checkout (solo INTERNATIONAL).</ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="fxMeta" type="object">
+  Conversión de divisas aplicada (solo INTERNATIONAL).
+  <Expandable title="Campos">
+    <ResponseField name="fromCurrency" type="string">BRL.</ResponseField>
+    <ResponseField name="toCurrency" type="string">Moneda destino (ej.: USD).</ResponseField>
+    <ResponseField name="rate" type="number">Tasa aplicada.</ResponseField>
+    <ResponseField name="originalAmount" type="number">Monto original en BRL.</ResponseField>
+    <ResponseField name="convertedAmount" type="number">Monto convertido.</ResponseField>
+    <ResponseField name="amountWithSpread" type="number">Monto final cobrado (con spread).</ResponseField>
+    <ResponseField name="amountCents" type="number">Monto final en centavos.</ResponseField>
+    <ResponseField name="fetchedAt" type="string">Momento de la cotización.</ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="expiresAt" type="string">Fecha de expiración.</ResponseField>
+<ResponseField name="description" type="string">Descripción del cobro.</ResponseField>
+<ResponseField name="externalReference" type="string">Referencia externa.</ResponseField>
+<ResponseField name="customerMeta" type="object">Datos del cliente.</ResponseField>
+
+<ResponseField name="splitConfig" type="array">
+  Configuración de división informada en la creación (presente cuando se envió `split[]`).
+  <Expandable title="Campos">
+    <ResponseField name="email" type="string">Correo del destinatario.</ResponseField>
+    <ResponseField name="kind" type="string">`FIXED` o `PERCENT`.</ResponseField>
+    <ResponseField name="amount" type="string">Valor fijo en BRL (FIXED).</ResponseField>
+    <ResponseField name="percent" type="number">Porcentaje (PERCENT).</ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="splitSettlement" type="array">
+  Liquidación calculada: cuánto recibe cada destinatario. El "vuelto" del redondeo (PERCENT) siempre va al dueño.
+  <Expandable title="Campos">
+    <ResponseField name="userId" type="number">ID del usuario en la plataforma.</ResponseField>
+    <ResponseField name="amountCents" type="number">Monto que recibirá el usuario (centavos).</ResponseField>
+    <ResponseField name="isOwner" type="boolean">`true` cuando es el dueño del cobro.</ResponseField>
+    <ResponseField name="sourceEmail" type="string">Correo del destinatario.</ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="createdAt" type="string">Fecha de creación (ISO 8601).</ResponseField>
+<ResponseField name="updatedAt" type="string">Fecha de última actualización (ISO 8601).</ResponseField>
 
 <RequestExample>
 
@@ -106,6 +200,7 @@ curl -X POST "https://api.gates2b.com/charge" \
     "externalReference": "pedido-123",
     "customerMeta": {
       "name": "Cliente Ejemplo",
+      "email": "cliente@example.com",
       "source": "PRE_FILLED"
     }
   }'
@@ -125,7 +220,48 @@ curl -X POST "https://api.gates2b.com/charge" \
   }'
 ```
 
-```javascript
+```bash cURL (con división)
+curl -X POST "https://api.gates2b.com/charge" \
+  -H "Authorization: Bearer {su-token}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "grossAmount": "200.00",
+    "currency": "BRL",
+    "paymentMethod": "PIX",
+    "split": [
+      {
+        "email": "socio1@example.com",
+        "kind": "FIXED",
+        "amount": "50.00"
+      },
+      {
+        "email": "socio2@example.com",
+        "kind": "PERCENT",
+        "percent": 10
+      }
+    ]
+  }'
+```
+
+```bash cURL (con INTERNATIONAL)
+curl -X POST "https://api.gates2b.com/charge" \
+  -H "Authorization: Bearer {su-token}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "grossAmount": "10.00",
+    "currency": "BRL",
+    "paymentMethod": "INTERNATIONAL",
+    "checkoutCurrency": "USD",
+    "description": "Checkout internacional",
+    "attemptIdempotencyKey": "uuid-v4",
+    "customerMeta": {
+      "name": "John Doe",
+      "email": "john@example.com"
+    }
+  }'
+```
+
+```javascript Node
 const response = await fetch("https://api.gates2b.com/charge", {
   method: "POST",
   headers: {
@@ -133,42 +269,39 @@ const response = await fetch("https://api.gates2b.com/charge", {
     "Content-Type": "application/json",
   },
   body: JSON.stringify({
-    grossAmount: "10.50",
+    grossAmount: "10.00",
     currency: "BRL",
-    description: "Cobro de prueba",
-    expiresAt: "2030-12-31T23:59:59.000Z",
-    externalReference: "pedido-123",
-    customerMeta: {
-      name: "Cliente Ejemplo",
-      source: "PRE_FILLED",
-    },
+    paymentMethod: "INTERNATIONAL",
+    checkoutCurrency: "USD",
+    attemptIdempotencyKey: crypto.randomUUID(),
+    customerMeta: { name: "John Doe", email: "john@example.com" },
   }),
 });
 
 const data = await response.json();
+// data.checkoutMeta.integrationToken → usar con Revolut Checkout Web SDK
 ```
 
-```python
-import requests
+```python Python
+import requests, uuid
 
-url = "https://api.gates2b.com/charge"
-headers = {
-    "Authorization": "Bearer {su-token}",
-    "Content-Type": "application/json"
-}
 payload = {
-    "grossAmount": "10.50",
+    "grossAmount": "10.00",
     "currency": "BRL",
-    "description": "Cobro de prueba",
-    "expiresAt": "2030-12-31T23:59:59.000Z",
-    "externalReference": "pedido-123",
-    "customerMeta": {
-        "name": "Cliente Ejemplo",
-        "source": "PRE_FILLED"
-    }
+    "paymentMethod": "INTERNATIONAL",
+    "checkoutCurrency": "USD",
+    "attemptIdempotencyKey": str(uuid.uuid4()),
+    "customerMeta": {"name": "John Doe", "email": "john@example.com"},
 }
 
-response = requests.post(url, headers=headers, json=payload)
+response = requests.post(
+    "https://api.gates2b.com/charge",
+    headers={
+        "Authorization": "Bearer {su-token}",
+        "Content-Type": "application/json",
+    },
+    json=payload,
+)
 data = response.json()
 ```
 
@@ -176,42 +309,139 @@ data = response.json()
 
 <ResponseExample>
 
-```json Éxito (sin intento)
+```json 200 — sin intento
 {
-  "id": "chr_abc123",
-  "grossAmount": "10.50",
-  "currency": "BRL",
+  "id": "01KPQ3EG70VJ22B7B5VDKCPN7H",
+  "userId": 222,
+  "kind": "SALE",
   "status": "PENDING",
+  "grossAmount": "10.50",
+  "netAmount": "10.45",
+  "sharedAmount": "0.00",
+  "disputeReserve": "0.00",
+  "refundedAmount": "0.00",
+  "currency": "BRL",
   "description": "Cobro de prueba",
   "externalReference": "pedido-123",
   "expiresAt": "2030-12-31T23:59:59.000Z",
-  "createdAt": "2026-01-15T14:00:00.000Z"
+  "customerMeta": {
+    "name": "Cliente Ejemplo",
+    "email": "cliente@example.com",
+    "source": "PRE_FILLED"
+  },
+  "webhookUrl": null,
+  "feesMeta": { "fees": "..." },
+  "createdAt": "2026-04-21T01:05:49.924Z",
+  "updatedAt": "2026-04-21T01:05:49.924Z"
 }
 ```
 
-```json Éxito (con PIX — retorna el intento)
+```json 200 — con PIX
 {
-  "id": "att_xyz789",
-  "chargeId": "chr_abc123",
+  "id": "019dae3c-4fa5-701a-bbfd-9f428c8ff31b",
+  "chargeId": "01KPQ3EG70VJ22B7B5VDKCPN7H",
+  "status": "PROCESSING",
   "paymentMethod": "PIX",
-  "status": "PENDING",
-  "createdAt": "2026-01-15T14:00:00.000Z"
+  "checkoutMeta": {
+    "url": "https://pay.gates2b.com/01KPQ3EG70VJ22B7B5VDKCPN7H",
+    "paymentMethod": "PIX",
+    "qr_text": "00020101021226...6304ABCD",
+    "qr_image": "data:image/png;base64,iVBORw0KGgo...",
+    "emv": "00020101021226..."
+  },
+  "payerMeta": null,
+  "fxMeta": null,
+  "createdAt": "2026-04-21T01:11:26.097Z",
+  "updatedAt": "2026-04-21T01:11:26.097Z"
 }
 ```
 
-```json Error - Datos Inválidos
+```json 200 — con INTERNATIONAL
+{
+  "id": "019dafda-39b7-712b-958b-d5ef419b3c18",
+  "chargeId": "01KPQXKM9HMB8AYXJEE046FD2R",
+  "status": "PROCESSING",
+  "paymentMethod": "INTERNATIONAL",
+  "checkoutMeta": {
+    "url": "https://pay.gates2b.com/01KPQXKM9HMB8AYXJEE046FD2R",
+    "paymentMethod": "INTERNATIONAL",
+    "currency": "USD",
+    "integrationToken": "ebd8cdc5-a422-45a3-8298-5f90500e460d"
+  },
+  "fxMeta": {
+    "fromCurrency": "BRL",
+    "toCurrency": "USD",
+    "rate": 0.1938,
+    "originalAmount": 10.00,
+    "convertedAmount": 1.94,
+    "amountWithSpread": 1.99,
+    "amountCents": 199,
+    "fetchedAt": "2026-04-21T11:43:28.000Z"
+  },
+  "payerMeta": null,
+  "createdAt": "2026-04-21T11:43:28.066Z",
+  "updatedAt": "2026-04-21T11:43:28.066Z"
+}
+```
+
+```json 200 — PIX con división
+{
+  "id": "019dae3c-4fa5-701a-bbfd-9f428c8ff31b",
+  "chargeId": "01KPQ3EG70VJ22B7B5VDKCPN7H",
+  "status": "PROCESSING",
+  "paymentMethod": "PIX",
+  "checkoutMeta": {
+    "url": "https://pay.gates2b.com/01KPQ3EG70VJ22B7B5VDKCPN7H",
+    "paymentMethod": "PIX",
+    "qr_text": "00020101021226...6304ABCD",
+    "qr_image": "data:image/png;base64,iVBORw0KGgo...",
+    "emv": "00020101021226..."
+  },
+  "splitConfig": [
+    { "email": "socio1@example.com", "kind": "FIXED", "amount": "50.00", "percent": null },
+    { "email": "socio2@example.com", "kind": "PERCENT", "amount": null, "percent": 10 }
+  ],
+  "splitSettlement": [
+    { "userId": 101, "amountCents": 13600, "isOwner": true,  "sourceEmail": "dueno@example.com" },
+    { "userId": 202, "amountCents": 5000,  "isOwner": false, "sourceEmail": "socio1@example.com" },
+    { "userId": 303, "amountCents": 1400,  "isOwner": false, "sourceEmail": "socio2@example.com" }
+  ],
+  "payerMeta": null,
+  "fxMeta": null,
+  "createdAt": "2026-04-28T10:00:00.000Z",
+  "updatedAt": "2026-04-28T10:00:00.000Z"
+}
+```
+
+```json 400 — paymentMethod inválido
 {
   "error": "Bad Request",
-  "message": "Datos inválidos en el payload",
+  "message": "El pago con tarjeta debe realizarse a través del checkout público (los datos sensibles no deben pasar por la API del merchant).",
   "statusCode": 400
 }
 ```
 
-```json Error - No Autorizado
+```json 400 — checkoutCurrency ausente
+{
+  "error": "Bad Request",
+  "message": "checkoutCurrency es obligatorio para paymentMethod=INTERNATIONAL.",
+  "statusCode": 400
+}
+```
+
+```json 401 — no autorizado
 {
   "error": "Unauthorized",
   "message": "Token de autenticación ausente o inválido",
   "statusCode": 401
+}
+```
+
+```json 409 — idempotencyKey reutilizada
+{
+  "error": "Conflict",
+  "message": "Idempotency key already used. Use a different key or omit it.",
+  "statusCode": 409
 }
 ```
 
@@ -221,15 +451,17 @@ data = response.json()
 
 `POST /charge/{chargeId}/attempts`
 
-Crea un nuevo intento de pago para un cobro existente (server-side, autenticado vía JWT).
+Crea un intento de pago para un cobro existente (server-side, autenticado vía JWT). Acepta `PIX` e `INTERNATIONAL`.
 
 | Parámetro | Tipo | Obligatorio | Descripción |
 |-----------|------|:-----------:|-------------|
-| `paymentMethod` | string | Sí | Método de pago (`PIX`, `INTERNATIONAL`) |
-| `currency` | string | Condicional | Moneda de destino (obligatorio para `INTERNATIONAL`) |
-| `attemptIdempotencyKey` | string | Sí | Clave de idempotencia |
+| `paymentMethod` | string | Sí | `PIX` o `INTERNATIONAL` |
+| `currency` | string | Condicional | Moneda de destino (obligatorio para `INTERNATIONAL`, ISO 4217) |
+| `redirectUrl` | string | No | URL de retorno (usado en INTERNATIONAL) |
+| `attemptIdempotencyKey` | string | No | Clave de idempotencia (recomendado) |
 
-```bash
+<CodeGroup>
+```bash PIX
 curl -X POST "https://api.gates2b.com/charge/{chargeId}/attempts" \
   -H "Authorization: Bearer {su-token}" \
   -H "Content-Type: application/json" \
@@ -238,3 +470,16 @@ curl -X POST "https://api.gates2b.com/charge/{chargeId}/attempts" \
     "attemptIdempotencyKey": "uuid-v4"
   }'
 ```
+
+```bash INTERNATIONAL
+curl -X POST "https://api.gates2b.com/charge/{chargeId}/attempts" \
+  -H "Authorization: Bearer {su-token}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "paymentMethod": "INTERNATIONAL",
+    "currency": "USD",
+    "redirectUrl": "https://su-sitio.com/retorno",
+    "attemptIdempotencyKey": "uuid-v4"
+  }'
+```
+</CodeGroup>

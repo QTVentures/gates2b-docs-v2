@@ -10,6 +10,10 @@ description: "Cria uma cobrança. Pode opcionalmente criar a primeira tentativa 
 `paymentMethod = CREDIT_CARD` **não é aceito** neste endpoint — dados sensíveis de cartão devem passar apenas pelo checkout público (`POST /charge/{id}/checkout/payment` com `X-Checkout-Token`).
 </Info>
 
+<Note>
+  <Badge color="green">Novo</Badge> **Split de Pagamento** — distribua o valor da cobrança entre múltiplos destinatários usando o campo `split[]`. Suporta valor fixo (`FIXED` em reais) e percentual (`PERCENT` sobre o `netAmount`). Veja os detalhes na seção de parâmetros abaixo.
+</Note>
+
 ## Parâmetros
 
 <ParamField header="Authorization" type="string" placeholder="Bearer {token}" required>
@@ -76,6 +80,30 @@ description: "Cria uma cobrança. Pode opcionalmente criar a primeira tentativa 
   </Expandable>
 </ParamField>
 
+<ParamField body="split" type="array">
+  <Badge color="green">Novo</Badge> Lista de destinatários para split de pagamento. Omitir este campo cria a cobrança sem split.
+  <Expandable title="Campos de cada item">
+    <ParamField body="email" type="string" required>
+      E-mail do destinatário cadastrado na plataforma.
+
+      <Warning>
+        O destinatário precisa ter uma conta ativa na plataforma como usuário `CUSTOMER`. Emails não encontrados ou de usuários com outro perfil caem como residual para o dono da cobrança — **não bloqueia a criação**, mas o valor não será repassado ao destinatário pretendido.
+      </Warning>
+    </ParamField>
+    <ParamField body="kind" type="string" required>
+      Tipo do split:
+      - `FIXED` — valor fixo em reais (informe `amount`). Soma dos itens FIXED deve ser ≤ `grossAmount`.
+      - `PERCENT` — percentual sobre o `netAmount` (informe `percent`). Soma dos itens PERCENT deve ser ≤ 100.
+    </ParamField>
+    <ParamField body="amount" type="string" placeholder="50.00">
+      Valor fixo em reais (ex.: `"50.00"`). **Obrigatório** quando `kind = FIXED`.
+    </ParamField>
+    <ParamField body="percent" type="number" placeholder="10">
+      Percentual de 0.01 a 100. **Obrigatório** quando `kind = PERCENT`.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
 ## Response
 
 <ResponseField name="id" type="string">
@@ -134,6 +162,26 @@ description: "Cria uma cobrança. Pode opcionalmente criar a primeira tentativa 
 <ResponseField name="description" type="string">Descrição da cobrança.</ResponseField>
 <ResponseField name="externalReference" type="string">Referência externa.</ResponseField>
 <ResponseField name="customerMeta" type="object">Dados do cliente.</ResponseField>
+<ResponseField name="splitConfig" type="array">
+  Configuração de split informada na criação (presente quando `split[]` foi enviado).
+  <Expandable title="Campos">
+    <ResponseField name="email" type="string">E-mail do destinatário.</ResponseField>
+    <ResponseField name="kind" type="string">`FIXED` ou `PERCENT`.</ResponseField>
+    <ResponseField name="amount" type="string">Valor fixo em reais (FIXED).</ResponseField>
+    <ResponseField name="percent" type="number">Percentual (PERCENT).</ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="splitSettlement" type="array">
+  Liquidação calculada: quanto cada destinatário recebe. O "troco" de arredondamento (PERCENT) sempre vai para o dono.
+  <Expandable title="Campos">
+    <ResponseField name="userId" type="number">ID do usuário na plataforma.</ResponseField>
+    <ResponseField name="amountCents" type="number">Valor que o usuário receberá (centavos).</ResponseField>
+    <ResponseField name="isOwner" type="boolean">`true` quando for o dono da cobrança.</ResponseField>
+    <ResponseField name="sourceEmail" type="string">E-mail do destinatário.</ResponseField>
+  </Expandable>
+</ResponseField>
+
 <ResponseField name="createdAt" type="string">Data de criação (ISO 8601).</ResponseField>
 <ResponseField name="updatedAt" type="string">Data de atualização (ISO 8601).</ResponseField>
 
@@ -168,6 +216,29 @@ curl -X POST "https://api.gates2b.com/charge" \
     "description": "Cobrança PIX",
     "expiresAt": "2030-12-31T23:59:59.000Z",
     "attemptIdempotencyKey": "uuid-v4"
+  }'
+```
+
+```bash cURL (com split)
+curl -X POST "https://api.gates2b.com/charge" \
+  -H "Authorization: Bearer {your-token}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "grossAmount": "200.00",
+    "currency": "BRL",
+    "paymentMethod": "PIX",
+    "split": [
+      {
+        "email": "parceiro1@example.com",
+        "kind": "FIXED",
+        "amount": "50.00"
+      },
+      {
+        "email": "parceiro2@example.com",
+        "kind": "PERCENT",
+        "percent": 10
+      }
+    ]
   }'
 ```
 
@@ -341,6 +412,35 @@ data = response.json()
   "error": "Conflict",
   "message": "Idempotency key already used. Use a different key or omit it.",
   "statusCode": 409
+}
+```
+
+```json 200 — PIX com split
+{
+  "id": "019dae3c-4fa5-701a-bbfd-9f428c8ff31b",
+  "chargeId": "01KPQ3EG70VJ22B7B5VDKCPN7H",
+  "status": "PROCESSING",
+  "paymentMethod": "PIX",
+  "checkoutMeta": {
+    "url": "https://pay.gates2b.com/01KPQ3EG70VJ22B7B5VDKCPN7H",
+    "paymentMethod": "PIX",
+    "qr_text": "00020101021226...6304ABCD",
+    "qr_image": "data:image/png;base64,iVBORw0KGgo...",
+    "emv": "00020101021226..."
+  },
+  "splitConfig": [
+    { "email": "parceiro1@example.com", "kind": "FIXED", "amount": "50.00", "percent": null },
+    { "email": "parceiro2@example.com", "kind": "PERCENT", "amount": null, "percent": 10 }
+  ],
+  "splitSettlement": [
+    { "userId": 101, "amountCents": 13600, "isOwner": true,  "sourceEmail": "dono@example.com" },
+    { "userId": 202, "amountCents": 5000,  "isOwner": false, "sourceEmail": "parceiro1@example.com" },
+    { "userId": 303, "amountCents": 1400,  "isOwner": false, "sourceEmail": "parceiro2@example.com" }
+  ],
+  "payerMeta": null,
+  "fxMeta": null,
+  "createdAt": "2026-04-28T10:00:00.000Z",
+  "updatedAt": "2026-04-28T10:00:00.000Z"
 }
 ```
 
