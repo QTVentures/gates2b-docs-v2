@@ -120,7 +120,7 @@
               {
                 "group": "Conexão MCP",
                 "pages": [
-                  "sobre"
+                  "mcp/sobre"
                 ]
               }
             ]
@@ -211,7 +211,7 @@
               {
                 "group": "MCP connection",
                 "pages": [
-                  "en/sobre"
+                  "en/mcp/sobre"
                 ]
               }
             ]
@@ -302,7 +302,7 @@
               {
                 "group": "Conexión MCP",
                 "pages": [
-                  "es/sobre"
+                  "es/mcp/sobre"
                 ]
               }
             ]
