@@ -20,6 +20,37 @@ Header format:
 
 ---
 
+## Minimum Transaction Amount
+
+The minimum transaction amount depends on the fee configured for each account.
+Default minimum: R$ 3,00 (no account has a fee below this value).
+Applies to all payment methods (PIX, Credit Card, Cryptocurrency).
+Requests below the account's configured minimum will return HTTP 400.
+
+---
+
+## Webhook Response URL (REQUIRED for transaction status)
+
+To receive transaction status updates (e.g., payment confirmed, denied, refunded),
+you MUST configure a Webhook Response URL globally in the dashboard:
+
+  https://painel.gates2b.com → Integration → Webhook URL
+
+This URL is configured ONCE at the account level and is used for ALL transactions
+created through the API (PIX, Card, Crypto). It is not sent per-request.
+
+Without a configured webhook URL, your system will not be notified when a
+transaction changes status — you would have to poll the invoice endpoints instead.
+
+Webhook URL requirements:
+  - Must be publicly accessible (HTTPS recommended).
+  - Must respond with HTTP 2xx within a reasonable timeout to acknowledge receipt.
+  - Must handle retries idempotently (Gates2B retries up to 3 times on failure).
+
+Example webhook URL: https://your-domain.com/webhooks/gates2b
+
+---
+
 ## Endpoints
 
 ### 1. Validate API Key
